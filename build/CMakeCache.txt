@@ -73,7 +73,7 @@ CMAKE_EXE_LINKER_FLAGS_RELEASE:STRING=/INCREMENTAL:NO
 CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO:STRING=/debug /INCREMENTAL
 
 //Install path prefix, prepended onto install directories.
-CMAKE_INSTALL_PREFIX:PATH=C:/Program Files/GEAsolution
+CMAKE_INSTALL_PREFIX:PATH=C:/Program Files/GeaSolution
 
 //Path to a program.
 CMAKE_LINKER:FILEPATH=C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/x86_amd64/link.exe
@@ -94,7 +94,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=/INCREMENTAL:NO
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=/debug /INCREMENTAL
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=GEAsolution
+CMAKE_PROJECT_NAME:STATIC=GeaSolution
 
 //RC compiler
 CMAKE_RC_COMPILER:FILEPATH=rc
@@ -146,10 +146,10 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
 //Value Computed by CMake
-GEAsolution_BINARY_DIR:STATIC=C:/Users/Computing/Documents/GitHub/Game_Engine_Architecture/build
+GeaSolution_BINARY_DIR:STATIC=C:/Users/Computing/Documents/GitHub/Game_Engine_Architecture/build
 
 //Value Computed by CMake
-GEAsolution_SOURCE_DIR:STATIC=C:/Users/Computing/Documents/GitHub/Game_Engine_Architecture
+GeaSolution_SOURCE_DIR:STATIC=C:/Users/Computing/Documents/GitHub/Game_Engine_Architecture
 
 
 ########################
