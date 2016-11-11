@@ -8,6 +8,7 @@
 
 [requires]
     SDL2/2.Y.Z
+    glm/0.9.7.6
 
 [options]
 
@@ -22,6 +23,7 @@
 
 [full_requires]
     SDL2/2.0.4@lasote/stable:91ccb03e0dea4be83e98d3bb24f796dc48e5be84
+    glm/0.9.7.6@dlarudgus20/stable:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
     zlib/1.2.8@lasote/stable:63da998e3642b50bee33f4449826b2d623661505
 
 [full_options]

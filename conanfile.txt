@@ -1,8 +1,12 @@
 [requires]
 SDL2/2.0.4@lasote/stable
+glm/0.9.7.6@dlarudgus20/stable
 
 [options]
+# sdl options
 SDL2:shared=True #False
+# glm options
 
 [generators]
 cmake
+txt

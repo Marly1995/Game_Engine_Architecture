@@ -1,5 +1,9 @@
 #include <iostream>
+
 #include "SDL.h"
+
+#include <glm/glm.hpp>
+
 int main(int argc, char* argv[])
 {
 	// send HelloWorld! to console output

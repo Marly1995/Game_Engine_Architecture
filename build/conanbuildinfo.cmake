@@ -9,6 +9,17 @@ set(CONAN_SHARED_LINKER_FLAGS_SDL2 "")
 set(CONAN_EXE_LINKER_FLAGS_SDL2 "")
 set(CONAN_C_FLAGS_SDL2 "/DWIN32 /D_WINDOWS /W3")
 
+set(CONAN_GLM_ROOT "C:/Users/Computing/.conan/data/glm/0.9.7.6/dlarudgus20/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9")
+set(CONAN_INCLUDE_DIRS_GLM "C:/Users/Computing/.conan/data/glm/0.9.7.6/dlarudgus20/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include")
+set(CONAN_LIB_DIRS_GLM "C:/Users/Computing/.conan/data/glm/0.9.7.6/dlarudgus20/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/lib")
+set(CONAN_BIN_DIRS_GLM "C:/Users/Computing/.conan/data/glm/0.9.7.6/dlarudgus20/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/bin")
+set(CONAN_LIBS_GLM )
+set(CONAN_DEFINES_GLM )
+set(CONAN_CXX_FLAGS_GLM "")
+set(CONAN_SHARED_LINKER_FLAGS_GLM "")
+set(CONAN_EXE_LINKER_FLAGS_GLM "")
+set(CONAN_C_FLAGS_GLM "")
+
 set(CONAN_ZLIB_ROOT "C:/Users/Computing/.conan/data/zlib/1.2.8/lasote/stable/package/63da998e3642b50bee33f4449826b2d623661505")
 set(CONAN_INCLUDE_DIRS_ZLIB "C:/Users/Computing/.conan/data/zlib/1.2.8/lasote/stable/package/63da998e3642b50bee33f4449826b2d623661505/include")
 set(CONAN_LIB_DIRS_ZLIB "C:/Users/Computing/.conan/data/zlib/1.2.8/lasote/stable/package/63da998e3642b50bee33f4449826b2d623661505/lib")
@@ -22,12 +33,15 @@ set(CONAN_C_FLAGS_ZLIB "")
 
 set(CONAN_PACKAGE_NAME None)
 set(CONAN_PACKAGE_VERSION None)
-set(CONAN_DEPENDENCIES SDL2 zlib)
+set(CONAN_DEPENDENCIES SDL2 glm zlib)
 set(CONAN_INCLUDE_DIRS "C:/Users/Computing/.conan/data/SDL2/2.0.4/lasote/stable/package/91ccb03e0dea4be83e98d3bb24f796dc48e5be84/include"
+			"C:/Users/Computing/.conan/data/glm/0.9.7.6/dlarudgus20/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include"
 			"C:/Users/Computing/.conan/data/zlib/1.2.8/lasote/stable/package/63da998e3642b50bee33f4449826b2d623661505/include" ${CONAN_INCLUDE_DIRS})
 set(CONAN_LIB_DIRS "C:/Users/Computing/.conan/data/SDL2/2.0.4/lasote/stable/package/91ccb03e0dea4be83e98d3bb24f796dc48e5be84/lib"
+			"C:/Users/Computing/.conan/data/glm/0.9.7.6/dlarudgus20/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/lib"
 			"C:/Users/Computing/.conan/data/zlib/1.2.8/lasote/stable/package/63da998e3642b50bee33f4449826b2d623661505/lib" ${CONAN_LIB_DIRS})
 set(CONAN_BIN_DIRS "C:/Users/Computing/.conan/data/SDL2/2.0.4/lasote/stable/package/91ccb03e0dea4be83e98d3bb24f796dc48e5be84/bin"
+			"C:/Users/Computing/.conan/data/glm/0.9.7.6/dlarudgus20/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/bin"
 			"C:/Users/Computing/.conan/data/zlib/1.2.8/lasote/stable/package/63da998e3642b50bee33f4449826b2d623661505/bin" ${CONAN_BIN_DIRS})
 set(CONAN_LIBS OpenGL32 user32 gdi32 winmm imm32 ole32 oleaut32 version uuid SDL2main SDL2 zlibstatic ${CONAN_LIBS})
 set(CONAN_DEFINES  ${CONAN_DEFINES})
@@ -35,7 +49,7 @@ set(CONAN_CXX_FLAGS " ${CONAN_CXX_FLAGS}")
 set(CONAN_SHARED_LINKER_FLAGS " ${CONAN_SHARED_LINKER_FLAGS}")
 set(CONAN_EXE_LINKER_FLAGS " ${CONAN_EXE_LINKER_FLAGS}")
 set(CONAN_C_FLAGS "/DWIN32 /D_WINDOWS /W3 ${CONAN_C_FLAGS}")
-set(CONAN_CMAKE_MODULE_PATH "C:/Users/Computing/.conan/data/SDL2/2.0.4/lasote/stable/package/91ccb03e0dea4be83e98d3bb24f796dc48e5be84" "C:/Users/Computing/.conan/data/zlib/1.2.8/lasote/stable/package/63da998e3642b50bee33f4449826b2d623661505" ${CONAN_CMAKE_MODULE_PATH})
+set(CONAN_CMAKE_MODULE_PATH "C:/Users/Computing/.conan/data/SDL2/2.0.4/lasote/stable/package/91ccb03e0dea4be83e98d3bb24f796dc48e5be84" "C:/Users/Computing/.conan/data/glm/0.9.7.6/dlarudgus20/stable/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9" "C:/Users/Computing/.conan/data/zlib/1.2.8/lasote/stable/package/63da998e3642b50bee33f4449826b2d623661505" ${CONAN_CMAKE_MODULE_PATH})
 macro(conan_basic_setup)
     conan_check_compiler()
     conan_output_dirs_setup()
