@@ -1,8 +1,12 @@
 #include <iostream>
+#include <fstream>
+#include <string>
 
 #include "SDL.h"
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+
+using namespace std;
 
 int main(int argc, char* argv[])
 {
@@ -16,25 +20,24 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 	SDL_Log("SDL initialized OK!\n");
-	
-	char* data;
-	SDL_RWops *file = SDL_RWFromFile("C:/Users/Computing/Documents/LogFile.txt", "rb");
 
-	if (file != nullptr)
+	string line;
+	ifstream file("C:/Users/Computing/Documents/LogFile.txt");
+
+	if (file.is_open())
 	{
-		SDL_Log("Should have finished writing!\n");
+		SDL_Log("File opened!\n");
 		
-		if (SDL_RWread(file, &data, sizeof(data), 1)) {
-			printf("i tried %c \n", data);
+		while (getline(file, line))
+		{
+			cout << line << "\n";
 		}
 		SDL_Log("Should have finished writing!\n");
-		SDL_RWclose(file);
+		file.close();
 	}
 	else
 	{
-
-		SDL_Log("File not loaded correclty!!!\n");
-		file = SDL_RWFromFile("C:/Users/Computing/Documents/LogFile.txt", "w");
+		SDL_Log("File not opened correclty!!!\n");
 	}
 	return 0;
 }
