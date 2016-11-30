@@ -466,7 +466,7 @@ void loadFile()
 					number = "";
 				}
 			}
-			positionData.push_back(glm::vec3(x, y, z));
+			positionData.push_back(glm::vec3(x/ 3000, y/ 3000, z/ 3000));
 			cout << line << "\n";
 			cout << x << "  " << y << "  " << z << "\n";
 		}
