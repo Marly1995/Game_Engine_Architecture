@@ -26,6 +26,9 @@ SDL_Window *win; //pointer to the SDL_Window
 SDL_GLContext context; //the SDL_GLContext
 int frameCount = 0;
 std::string frameLine = "";
+
+vector<glm::vec3> positionData;
+int positionIterator = 0;
 // end::globalVariables[]
 
 // tag::loadShader[]
@@ -381,10 +384,10 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 {
 	//WARNING - we should calculate an appropriate amount of time to simulate - not always use a constant amount of time
 	// see, for example, http://headerphile.blogspot.co.uk/2014/07/part-9-no-more-delays.html
-
-	position1 += float(simLength) * velocity1;
-	position2 += float(simLength) * velocity2;
-
+	
+	position1 = positionData[positionIterator];
+	cout << "  " << positionData[positionIterator].x << "  " << positionData[positionIterator].y << "  " << positionData[positionIterator].z<< "\n";
+	positionIterator++;
 }
 // end::updateSimulation[]
 
@@ -410,14 +413,8 @@ void render()
 	//set viewMatrix - how we control the view (viewpoint, view direction, etc)
 	glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
-
 	//set modelMatrix and draw for triangle 1
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position1);
-	glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-
-	//set modelMatrix and draw for triangle 2
-	modelMatrix = glm::translate(glm::mat4(1.0f), position2);
 	glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -428,7 +425,6 @@ void render()
 // end::render[]
 void loadFile()
 {
-	list<glm::vec3> positionData;
 	string line;
 	ifstream file("C:/Users/Computing/Documents/LogFile.txt");
 	string number;
@@ -441,6 +437,9 @@ void loadFile()
 			int i;
 			int k = 0;
 			float x, y, z;
+			x = 0;
+			y = 0;
+			z = 0;
 			for (i = 4; i < line.size(); i++)
 			{
 				if (line[i] != ',' && line[i] != ')')
@@ -454,7 +453,7 @@ void loadFile()
 					i += 3;
 					number = "";
 				}
-				else if (line[i] == ',' && k == 1)
+				else if (line[i] == ',' || line[i] == ')' && k == 1)
 				{
 					y = stof(number);
 					k++;
@@ -467,7 +466,7 @@ void loadFile()
 					number = "";
 				}
 			}
-			positionData.assign(1, glm::vec3(x, y, z));
+			positionData.push_back(glm::vec3(x, y, z));
 			cout << line << "\n";
 			cout << x << "  " << y << "  " << z << "\n";
 		}
