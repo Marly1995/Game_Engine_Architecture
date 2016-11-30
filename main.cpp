@@ -443,7 +443,7 @@ void loadFile()
 			float x, y, z;
 			for (i = 4; i < line.size(); i++)
 			{
-				if (line[i] != ',')
+				if (line[i] != ',' && line[i] != ')')
 				{
 					number += line[i];
 				}
@@ -452,20 +452,24 @@ void loadFile()
 					x = stof(number);
 					k++;
 					i += 3;
+					number = "";
 				}
 				else if (line[i] == ',' && k == 1)
 				{
 					y = stof(number);
 					k++;
 					i += 3;
+					number = "";
 				}
-				else if (line[i] == ',' && k == 2)
+				else if (line[i] == ')' && k == 2)
 				{
 					z = stof(number);
+					number = "";
 				}
 			}
 			positionData.assign(1, glm::vec3(x, y, z));
 			cout << line << "\n";
+			cout << x << "  " << y << "  " << z << "\n";
 		}
 		SDL_Log("Should have finished writing!\n");
 		file.close();
