@@ -66,7 +66,7 @@ const GLfloat vertexData[] = {
 
 // tag::gameState[]
 //the translation vector we'll pass to our GLSL program
-glm::vec3 position1 = { 0.0f, 0.0f, 0.0f };
+glm::vec3 position1 = { -0.5f, -0.5f, 0.0f };
 glm::vec3 velocity1 = { 0.1f, 0.1f, 0.0f };
 
 glm::vec3 position2 = { 0.8f, -0.5f , 0.0f };
@@ -318,7 +318,7 @@ void initializeVertexBuffer()
 	glGenBuffers(1, &vertexDataBufferObject);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, logVertexData.size(), &logVertexData, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(logVertexData), &logVertexData, GL_STREAM_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
 
@@ -396,7 +396,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 void preRender()
 {
 	glViewport(0, 0, 600, 600); //set viewpoint
-	glClearColor(1.0f, 0.0f, 0.0f, 1.0f); //set clear colour
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); //set clear colour
 	glClear(GL_COLOR_BUFFER_BIT); //clear the window (technical the scissor box bounds)
 }
 // end::preRender[]
@@ -471,8 +471,8 @@ void loadFile()
 			logVertexData.push_back(x/3000);
 			logVertexData.push_back(y/3000);
 			logVertexData.push_back(z/3000);
-			//cout << line << "\n";
-			//cout << x << "  " << y << "  " << z << "\n";
+			cout << line << "\n";
+			cout << x << "  " << y << "  " << z << "\n";
 		}
 		SDL_Log("Should have finished writing!\n");
 		file.close();
