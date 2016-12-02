@@ -67,10 +67,6 @@ const GLfloat vertexData[] = {
 // tag::gameState[]
 //the translation vector we'll pass to our GLSL program
 glm::vec3 position1 = { 0.0f, 0.0f, 0.0f };
-glm::vec3 velocity1 = { 0.1f, 0.1f, 0.0f };
-
-glm::vec3 position2 = { 0.8f, -0.5f , 0.0f };
-glm::vec3 velocity2 = { -0.2f, 0.15f, 0.0f };
 // end::gameState[]
 
 // tag::GLVariables[]
@@ -285,9 +281,9 @@ void initializeProgram()
 // end::initializeProgram[]
 
 // tag::initializeVertexArrayObject[]
-//setup a GL object (a VertexArrayObject) that stores how to access data and from where
 void initializeVertexArrayObject()
 {
+	// setup a GL object (a VertexArrayObject) that stores how to access data and from where
 	glGenVertexArrays(1, &vertexArrayObject); //create a Vertex Array Object
 	cout << "Vertex Array Object created OK! GLUint is: " << vertexArrayObject << std::endl;
 
@@ -318,7 +314,7 @@ void initializeVertexBuffer()
 	glGenBuffers(1, &vertexDataBufferObject);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, logVertexData.size(), &logVertexData, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, logVertexData.size(), &logVertexData.front(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
 
@@ -389,6 +385,11 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	//position1 = positionData[positionIterator];
 	//cout << "  " << positionData[positionIterator].x << "  " << positionData[positionIterator].y << "  " << positionData[positionIterator].z<< "\n";
 	//positionIterator++;
+
+	for (int i = 0; i < 10; i++)
+	{
+		//cout << "\n " << logVertexData[i] << "  ";
+	}
 }
 // end::updateSimulation[]
 
@@ -468,9 +469,9 @@ void loadFile()
 				}
 			}
 			positionData.push_back(glm::vec3(x/ 3000, y/ 3000, z/ 3000));
-			logVertexData.push_back(x/3000);
-			logVertexData.push_back(y/3000);
-			logVertexData.push_back(z/3000);
+			logVertexData.push_back(x/3000.0f);
+			logVertexData.push_back(y/3000.0f);
+			logVertexData.push_back(z/3000.0f);
 			//cout << line << "\n";
 			//cout << x << "  " << y << "  " << z << "\n";
 		}
@@ -481,6 +482,7 @@ void loadFile()
 	{
 		SDL_Log("File not opened correclty!!!\n");
 	}
+	cout << "\n" << logVertexData.size() << "\n";
 }
 // tag::postRender[]
 void postRender()
