@@ -30,7 +30,6 @@ std::string frameLine = "";
 vector<glm::vec3> positionData;
 vector<GLfloat> logVertexData;
 int positionIterator = 0;
-char* fileDirectory;
 // end::globalVariables[]
 
 // tag::loadShader[]
@@ -67,7 +66,11 @@ const GLfloat vertexData[] = {
 
 // tag::gameState[]
 //the translation vector we'll pass to our GLSL program
-glm::vec3 position1 = { 0.0f, 0.0f, 0.0f };
+glm::vec3 position1 = { -0.5f, -0.5f, 0.0f };
+glm::vec3 velocity1 = { 0.1f, 0.1f, 0.0f };
+
+glm::vec3 position2 = { 0.8f, -0.5f , 0.0f };
+glm::vec3 velocity2 = { -0.2f, 0.15f, 0.0f };
 // end::gameState[]
 
 // tag::GLVariables[]
@@ -241,68 +244,6 @@ GLuint createProgram(const std::vector<GLuint> &shaderList)
 }
 // end::createProgram[]
 
-// tag::loadFile[]
-void loadFile()
-{
-	string line;
-	ifstream file;
-	if (fileDirectory != nullptr)
-	{
-		file.open(fileDirectory);
-	}
-	string number;
-	if (file.is_open())
-	{
-		SDL_Log("File opened!\n");
-		int dataPosition = 0;
-		while (getline(file, line))
-		{
-			int i;
-			int k = 0;
-			float x, y, z;
-			x = 0;
-			y = 0;
-			z = 0;
-			for (i = 4; i < line.size(); i++)
-			{
-				if (line[i] != ',' && line[i] != ')')
-				{
-					number += line[i];
-				}
-				else if (line[i] == ',' && k == 0)
-				{
-					x = stof(number);
-					k++;
-					i += 3;
-					number = "";
-				}
-				else if (line[i] == ',' || line[i] == ')' && k == 1)
-				{
-					y = stof(number);
-					k++;
-					i += 3;
-					number = "";
-				}
-				else if (line[i] == ')' && k == 2)
-				{
-					z = stof(number);
-					number = "";
-				}
-			}
-			positionData.push_back(glm::vec3(x / 3000, y / 3000, z / 3000));
-			//cout << line << "\n";
-			//cout << x << "  " << y << "  " << z << "\n";
-		}
-		SDL_Log("Should have finished writing!\n");
-		file.close();
-	}
-	else
-	{
-		SDL_Log("File not opened correclty!!!\n");
-	}
-}
-// end::loadFile[]
-
 // tag::initializeProgram[]
 void initializeProgram()
 {
@@ -344,9 +285,9 @@ void initializeProgram()
 // end::initializeProgram[]
 
 // tag::initializeVertexArrayObject[]
+//setup a GL object (a VertexArrayObject) that stores how to access data and from where
 void initializeVertexArrayObject()
 {
-	// setup a GL object (a VertexArrayObject) that stores how to access data and from where
 	glGenVertexArrays(1, &vertexArrayObject); //create a Vertex Array Object
 	cout << "Vertex Array Object created OK! GLUint is: " << vertexArrayObject << std::endl;
 
@@ -377,7 +318,7 @@ void initializeVertexBuffer()
 	glGenBuffers(1, &vertexDataBufferObject);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, logVertexData.size() * sizeof(GLfloat), &logVertexData.front(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(logVertexData), &logVertexData, GL_STREAM_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
 
@@ -434,16 +375,6 @@ void handleInput()
 				case SDLK_ESCAPE: done = true;
 				}
 			break;
-
-		case SDL_DROPFILE:
-			fileDirectory = event.drop.file;
-			SDL_ShowSimpleMessageBox(
-				SDL_MESSAGEBOX_INFORMATION,
-				"File Dropped on Window",
-				fileDirectory,
-				win
-			);
-			loadFile();
 		}
 	}
 }
@@ -454,25 +385,10 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 {
 	//WARNING - we should calculate an appropriate amount of time to simulate - not always use a constant amount of time
 	// see, for example, http://headerphile.blogspot.co.uk/2014/07/part-9-no-more-delays.html
-	if (positionIterator < positionData.size()) 
-	{
-		position1 = positionData[positionIterator];
-		cout << "  " << positionData[positionIterator].x << "  " << positionData[positionIterator].y << "  " << positionData[positionIterator].z << "\n";
-		positionIterator++;
-	}
-	else { positionIterator = 0; }
 	
-<<<<<<< HEAD
-=======
 	//position1 = positionData[positionIterator];
 	//cout << "  " << positionData[positionIterator].x << "  " << positionData[positionIterator].y << "  " << positionData[positionIterator].z<< "\n";
 	//positionIterator++;
-
-	for (int i = 0; i < 10; i++)
-	{
-		//cout << "\n " << logVertexData[i] << "  ";
-	}
->>>>>>> refs/remotes/origin/trajectory
 }
 // end::updateSimulation[]
 
@@ -480,7 +396,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 void preRender()
 {
 	glViewport(0, 0, 600, 600); //set viewpoint
-	glClearColor(1.0f, 0.0f, 0.0f, 1.0f); //set clear colour
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); //set clear colour
 	glClear(GL_COLOR_BUFFER_BIT); //clear the window (technical the scissor box bounds)
 }
 // end::preRender[]
@@ -501,17 +417,13 @@ void render()
 	//set modelMatrix and draw for triangle 1
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position1);
 	glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-	glLineWidth(5);
-	glDrawArrays(GL_LINE_STRIP, 0, logVertexData.size()/3);
+	glDrawArrays(GL_TRIANGLES, 0, (logVertexData.size()/3));
 
 	glBindVertexArray(0);
 
 	glUseProgram(0); //clean up
 }
 // end::render[]
-<<<<<<< HEAD
-
-=======
 void loadFile()
 {
 	string line;
@@ -556,11 +468,11 @@ void loadFile()
 				}
 			}
 			positionData.push_back(glm::vec3(x/ 3000, y/ 3000, z/ 3000));
-			logVertexData.push_back(x/3000.0f);
-			logVertexData.push_back(y/3000.0f);
-			logVertexData.push_back(z/3000.0f);
-			//cout << line << "\n";
-			//cout << x << "  " << y << "  " << z << "\n";
+			logVertexData.push_back(x/3000);
+			logVertexData.push_back(y/3000);
+			logVertexData.push_back(z/3000);
+			cout << line << "\n";
+			cout << x << "  " << y << "  " << z << "\n";
 		}
 		SDL_Log("Should have finished writing!\n");
 		file.close();
@@ -569,9 +481,7 @@ void loadFile()
 	{
 		SDL_Log("File not opened correclty!!!\n");
 	}
-	cout << "\n" << logVertexData.size() << "\n";
 }
->>>>>>> refs/remotes/origin/trajectory
 // tag::postRender[]
 void postRender()
 {
