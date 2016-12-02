@@ -29,6 +29,7 @@ std::string frameLine = "";
 
 vector<glm::vec3> positionData;
 int positionIterator = 0;
+char* fileDirectory;
 // end::globalVariables[]
 
 // tag::loadShader[]
@@ -65,11 +66,7 @@ const GLfloat vertexData[] = {
 
 // tag::gameState[]
 //the translation vector we'll pass to our GLSL program
-glm::vec3 position1 = { -0.5f, -0.5f, 0.0f };
-glm::vec3 velocity1 = { 0.1f, 0.1f, 0.0f };
-
-glm::vec3 position2 = { 0.8f, -0.5f , 0.0f };
-glm::vec3 velocity2 = { -0.2f, 0.15f, 0.0f };
+glm::vec3 position1 = { 0.0f, 0.0f, 0.0f };
 // end::gameState[]
 
 // tag::GLVariables[]
@@ -243,6 +240,68 @@ GLuint createProgram(const std::vector<GLuint> &shaderList)
 }
 // end::createProgram[]
 
+// tag::loadFile[]
+void loadFile()
+{
+	string line;
+	ifstream file;
+	if (fileDirectory != nullptr)
+	{
+		file.open(fileDirectory);
+	}
+	string number;
+	if (file.is_open())
+	{
+		SDL_Log("File opened!\n");
+		int dataPosition = 0;
+		while (getline(file, line))
+		{
+			int i;
+			int k = 0;
+			float x, y, z;
+			x = 0;
+			y = 0;
+			z = 0;
+			for (i = 4; i < line.size(); i++)
+			{
+				if (line[i] != ',' && line[i] != ')')
+				{
+					number += line[i];
+				}
+				else if (line[i] == ',' && k == 0)
+				{
+					x = stof(number);
+					k++;
+					i += 3;
+					number = "";
+				}
+				else if (line[i] == ',' || line[i] == ')' && k == 1)
+				{
+					y = stof(number);
+					k++;
+					i += 3;
+					number = "";
+				}
+				else if (line[i] == ')' && k == 2)
+				{
+					z = stof(number);
+					number = "";
+				}
+			}
+			positionData.push_back(glm::vec3(x / 3000, y / 3000, z / 3000));
+			//cout << line << "\n";
+			//cout << x << "  " << y << "  " << z << "\n";
+		}
+		SDL_Log("Should have finished writing!\n");
+		file.close();
+	}
+	else
+	{
+		SDL_Log("File not opened correclty!!!\n");
+	}
+}
+// end::loadFile[]
+
 // tag::initializeProgram[]
 void initializeProgram()
 {
@@ -374,6 +433,16 @@ void handleInput()
 				case SDLK_ESCAPE: done = true;
 				}
 			break;
+
+		case SDL_DROPFILE:
+			fileDirectory = event.drop.file;
+			SDL_ShowSimpleMessageBox(
+				SDL_MESSAGEBOX_INFORMATION,
+				"File Dropped on Window",
+				fileDirectory,
+				win
+			);
+			loadFile();
 		}
 	}
 }
@@ -384,10 +453,14 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 {
 	//WARNING - we should calculate an appropriate amount of time to simulate - not always use a constant amount of time
 	// see, for example, http://headerphile.blogspot.co.uk/2014/07/part-9-no-more-delays.html
+	if (positionIterator < positionData.size()) 
+	{
+		position1 = positionData[positionIterator];
+		cout << "  " << positionData[positionIterator].x << "  " << positionData[positionIterator].y << "  " << positionData[positionIterator].z << "\n";
+		positionIterator++;
+	}
+	else { positionIterator = 0; }
 	
-	position1 = positionData[positionIterator];
-	cout << "  " << positionData[positionIterator].x << "  " << positionData[positionIterator].y << "  " << positionData[positionIterator].z<< "\n";
-	positionIterator++;
 }
 // end::updateSimulation[]
 
@@ -423,61 +496,7 @@ void render()
 	glUseProgram(0); //clean up
 }
 // end::render[]
-void loadFile()
-{
-	string line;
-	ifstream file("C:/Users/Computing/Documents/LogFile.txt");
-	string number;
-	if (file.is_open())
-	{
-		SDL_Log("File opened!\n");
-		int dataPosition = 0;
-		while (getline(file, line))
-		{
-			int i;
-			int k = 0;
-			float x, y, z;
-			x = 0;
-			y = 0;
-			z = 0;
-			for (i = 4; i < line.size(); i++)
-			{
-				if (line[i] != ',' && line[i] != ')')
-				{
-					number += line[i];
-				}
-				else if (line[i] == ',' && k == 0)
-				{
-					x = stof(number);
-					k++;
-					i += 3;
-					number = "";
-				}
-				else if (line[i] == ',' || line[i] == ')' && k == 1)
-				{
-					y = stof(number);
-					k++;
-					i += 3;
-					number = "";
-				}
-				else if (line[i] == ')' && k == 2)
-				{
-					z = stof(number);
-					number = "";
-				}
-			}
-			positionData.push_back(glm::vec3(x/ 3000, y/ 3000, z/ 3000));
-			cout << line << "\n";
-			cout << x << "  " << y << "  " << z << "\n";
-		}
-		SDL_Log("Should have finished writing!\n");
-		file.close();
-	}
-	else
-	{
-		SDL_Log("File not opened correclty!!!\n");
-	}
-}
+
 // tag::postRender[]
 void postRender()
 {
