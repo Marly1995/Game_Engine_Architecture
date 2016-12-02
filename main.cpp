@@ -314,7 +314,7 @@ void initializeVertexBuffer()
 	glGenBuffers(1, &vertexDataBufferObject);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, logVertexData.size(), &logVertexData.front(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, logVertexData.size() * sizeof(GLfloat), &logVertexData.front(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
 
@@ -418,7 +418,8 @@ void render()
 	//set modelMatrix and draw for triangle 1
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position1);
 	glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-	glDrawArrays(GL_LINE_STRIP, 0, (logVertexData.size()/3));
+	glLineWidth(5);
+	glDrawArrays(GL_LINE_STRIP, 0, logVertexData.size()/3);
 
 	glBindVertexArray(0);
 
