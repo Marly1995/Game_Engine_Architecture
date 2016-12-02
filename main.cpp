@@ -30,7 +30,7 @@ std::string frameLine = "";
 vector<glm::vec3> positionData;
 vector<GLfloat> logVertexData;
 int positionIterator = 0;
-char* fileDirectory;
+char* fileDirectory = ("C:/Users/Computing/Documents/LogFile.txt");
 // end::globalVariables[]
 
 // tag::loadShader[]
@@ -244,6 +244,7 @@ GLuint createProgram(const std::vector<GLuint> &shaderList)
 // tag::loadFile[]
 void loadFile()
 {
+	logVertexData.clear();
 	string line;
 	ifstream file;
 	if (fileDirectory != nullptr)
@@ -292,6 +293,9 @@ void loadFile()
 			positionData.push_back(glm::vec3(x / 3000, y / 3000, z / 3000));
 			//cout << line << "\n";
 			//cout << x << "  " << y << "  " << z << "\n";
+			logVertexData.push_back(x / 3000.0f);
+			logVertexData.push_back(y / 3000.0f);
+			logVertexData.push_back(z / 3000.0f);
 		}
 		SDL_Log("Should have finished writing!\n");
 		file.close();
@@ -377,7 +381,7 @@ void initializeVertexBuffer()
 	glGenBuffers(1, &vertexDataBufferObject);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, logVertexData.size() * sizeof(GLfloat), &logVertexData.front(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, logVertexData.size() * sizeof(GLfloat), &logVertexData.front(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
 
@@ -454,25 +458,13 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 {
 	//WARNING - we should calculate an appropriate amount of time to simulate - not always use a constant amount of time
 	// see, for example, http://headerphile.blogspot.co.uk/2014/07/part-9-no-more-delays.html
-	if (positionIterator < positionData.size()) 
+	/*if (positionIterator < positionData.size()) 
 	{
 		position1 = positionData[positionIterator];
 		cout << "  " << positionData[positionIterator].x << "  " << positionData[positionIterator].y << "  " << positionData[positionIterator].z << "\n";
 		positionIterator++;
-	}
-	else { positionIterator = 0; }
-	
-<<<<<<< HEAD
-=======
-	//position1 = positionData[positionIterator];
-	//cout << "  " << positionData[positionIterator].x << "  " << positionData[positionIterator].y << "  " << positionData[positionIterator].z<< "\n";
-	//positionIterator++;
-
-	for (int i = 0; i < 10; i++)
-	{
-		//cout << "\n " << logVertexData[i] << "  ";
-	}
->>>>>>> refs/remotes/origin/trajectory
+	}*/
+	//else { positionIterator = 0; }
 }
 // end::updateSimulation[]
 
@@ -509,69 +501,7 @@ void render()
 	glUseProgram(0); //clean up
 }
 // end::render[]
-<<<<<<< HEAD
 
-=======
-void loadFile()
-{
-	string line;
-	ifstream file("C:/Users/Computing/Documents/LogFile.txt");
-	string number;
-	if (file.is_open())
-	{
-		SDL_Log("File opened!\n");
-		int dataPosition = 0;
-		while (getline(file, line))
-		{
-			int i;
-			int k = 0;
-			float x, y, z;
-			x = 0;
-			y = 0;
-			z = 0;
-			for (i = 4; i < line.size(); i++)
-			{
-				if (line[i] != ',' && line[i] != ')')
-				{
-					number += line[i];
-				}
-				else if (line[i] == ',' && k == 0)
-				{
-					x = stof(number);
-					k++;
-					i += 3;
-					number = "";
-				}
-				else if (line[i] == ',' || line[i] == ')' && k == 1)
-				{
-					y = stof(number);
-					k++;
-					i += 3;
-					number = "";
-				}
-				else if (line[i] == ')' && k == 2)
-				{
-					z = stof(number);
-					number = "";
-				}
-			}
-			positionData.push_back(glm::vec3(x/ 3000, y/ 3000, z/ 3000));
-			logVertexData.push_back(x/3000.0f);
-			logVertexData.push_back(y/3000.0f);
-			logVertexData.push_back(z/3000.0f);
-			//cout << line << "\n";
-			//cout << x << "  " << y << "  " << z << "\n";
-		}
-		SDL_Log("Should have finished writing!\n");
-		file.close();
-	}
-	else
-	{
-		SDL_Log("File not opened correclty!!!\n");
-	}
-	cout << "\n" << logVertexData.size() << "\n";
-}
->>>>>>> refs/remotes/origin/trajectory
 // tag::postRender[]
 void postRender()
 {
