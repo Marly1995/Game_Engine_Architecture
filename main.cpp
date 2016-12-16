@@ -27,6 +27,15 @@ SDL_GLContext context; //the SDL_GLContext
 int frameCount = 0;
 std::string frameLine = "";
 
+int mode = 0;
+int bar1, bar2, bar3, bar4, bar5;
+vector<GLfloat> powerVertexData;
+vector<GLfloat> bar1VertexData;
+vector<GLfloat> bar2VertexData;
+vector<GLfloat> bar3VertexData;
+vector<GLfloat> bar4VertexData;
+vector<GLfloat> bar5VertexData;
+
 vector<glm::vec3> positionData;
 vector<GLfloat> logVertexData;
 int positionIterator = 0;
@@ -241,69 +250,151 @@ GLuint createProgram(const std::vector<GLuint> &shaderList)
 }
 // end::createProgram[]
 
+void initializeHistogramVertexData()
+{
+	bar1VertexData.push_back(0.0f);
+	bar1VertexData.push_back(0.0f);
+	bar1VertexData.push_back(0.0f);
+
+	bar1VertexData.push_back(0.1f);
+	bar1VertexData.push_back(0.0f);
+	bar1VertexData.push_back(0.0f);
+
+	bar1VertexData.push_back(0.0f);
+	bar1VertexData.push_back(bar1/10);
+	bar1VertexData.push_back(0.0f);
+
+	bar1VertexData.push_back(0.0f);
+	bar1VertexData.push_back(bar1/10);
+	bar1VertexData.push_back(0.0f);
+
+	bar1VertexData.push_back(0.1f);
+	bar1VertexData.push_back(bar1/10);
+	bar1VertexData.push_back(0.0f);
+
+	bar1VertexData.push_back(0.1f);
+	bar1VertexData.push_back(0.0f);
+	bar1VertexData.push_back(0.0f);
+}
+
+void parseHistogram()
+{
+	for (int i = 0; i < powerVertexData.size(); i++)
+	{
+		if (powerVertexData[i] < 500.0f)
+		{
+			bar1++;
+		}
+		if (powerVertexData[i] > 500.0f && powerVertexData[i] < 1000.0f)
+		{
+			bar2++;
+		}
+		if (powerVertexData[i] > 1000.0f && powerVertexData[i] < 1500.0f)
+		{
+			bar3++;
+		}
+		if (powerVertexData[i] > 1500.0f && powerVertexData[i] < 2000.0f)
+		{
+			bar4++;
+		}
+		if (powerVertexData[i] > 2000.0f)
+		{
+			bar5++;
+		}
+	}
+	initializeHistogramVertexData();
+}
+
 // tag::loadFile[]
 void loadFile()
 {
 	logVertexData.clear();
 	string line;
 	ifstream file;
-	if (fileDirectory != nullptr)
+	if (mode == 1) 
 	{
-		file.open(fileDirectory);
-	}
-	string number;
-	if (file.is_open())
-	{
-		SDL_Log("File opened!\n");
-		int dataPosition = 0;
-		while (getline(file, line))
+		if (fileDirectory != nullptr)
 		{
-			int i;
-			int k = 0;
-			float x, y, z;
-			x = 0;
-			y = 0;
-			z = 0;
-			for (i = 4; i < line.size(); i++)
-			{
-				if (line[i] != ',' && line[i] != ')')
-				{
-					number += line[i];
-				}
-				else if (line[i] == ',' && k == 0)
-				{
-					x = stof(number);
-					k++;
-					i += 3;
-					number = "";
-				}
-				else if (line[i] == ',' || line[i] == ')' && k == 1)
-				{
-					y = stof(number);
-					k++;
-					i += 3;
-					number = "";
-				}
-				else if (line[i] == ')' && k == 2)
-				{
-					z = stof(number);
-					number = "";
-				}
-			}
-			positionData.push_back(glm::vec3(x / 3000, y / 3000, z / 3000));
-			//cout << line << "\n";
-			//cout << x << "  " << y << "  " << z << "\n";
-			logVertexData.push_back(x / 3000.0f);
-			logVertexData.push_back(y / 3000.0f);
-			logVertexData.push_back(z / 3000.0f);
+			file.open(fileDirectory);
 		}
-		SDL_Log("Should have finished writing!\n");
-		file.close();
+		string number;
+		if (file.is_open())
+		{
+			SDL_Log("power File opened!\n");
+			int dataPosition = 0;
+			while (getline(file, line))
+			{
+				number = line;
+				powerVertexData.push_back(stof(number));
+			}
+			SDL_Log("Should have finished writing!\n");
+			file.close();
+
+			parseHistogram();
+		}
+		else
+		{
+			SDL_Log("File not opened correclty!!!\n");
+		}
 	}
-	else
+	if (mode == 0) 
 	{
-		SDL_Log("File not opened correclty!!!\n");
+		if (fileDirectory != nullptr)
+		{
+			file.open(fileDirectory);
+		}
+		string number;
+		if (file.is_open())
+		{
+			SDL_Log("File opened!\n");
+			int dataPosition = 0;
+			while (getline(file, line))
+			{
+				int i;
+				int k = 0;
+				float x, y, z;
+				x = 0;
+				y = 0;
+				z = 0;
+				for (i = 4; i < line.size(); i++)
+				{
+					if (line[i] != ',' && line[i] != ')')
+					{
+						number += line[i];
+					}
+					else if (line[i] == ',' && k == 0)
+					{
+						x = stof(number);
+						k++;
+						i += 3;
+						number = "";
+					}
+					else if (line[i] == ',' || line[i] == ')' && k == 1)
+					{
+						y = stof(number);
+						k++;
+						i += 3;
+						number = "";
+					}
+					else if (line[i] == ')' && k == 2)
+					{
+						z = stof(number);
+						number = "";
+					}
+				}
+				logVertexData.push_back(x / 3000.0f);
+				logVertexData.push_back(y / 3000.0f);
+				logVertexData.push_back(z / 3000.0f);
+			}
+			SDL_Log("Should have finished writing!\n");
+			file.close();
+		}
+		else
+		{
+			SDL_Log("File not opened correclty!!!\n");
+		}
 	}
+	
 }
 // end::loadFile[]
 
@@ -389,6 +480,18 @@ void initializeVertexBuffer()
 }
 // end::initializeVertexBuffer[]
 
+void displayHistogram()
+{
+	glGenBuffers(1, &vertexDataBufferObject);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, bar1VertexData.size() * sizeof(GLfloat), &bar1VertexData.front(), GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
+
+	initializeVertexArrayObject();
+}
+
 // tag::loadAssets[]
 void loadAssets()
 {
@@ -436,6 +539,14 @@ void handleInput()
 				{
 					//hit escape to exit
 				case SDLK_ESCAPE: done = true;
+					break;
+				case SDLK_SPACE: displayHistogram();
+					break;
+				case SDLK_RETURN: initializeVertexBuffer();
+					break;
+				case SDLK_0: mode = 0;
+					break;
+				case SDLK_1: mode = 1;
 				}
 			break;
 
@@ -494,8 +605,14 @@ void render()
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position1);
 	glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
 	glLineWidth(5);
-	glDrawArrays(GL_LINE_STRIP, 0, logVertexData.size()/3);
-
+	if (mode == 0) 
+	{
+		glDrawArrays(GL_LINE_STRIP, 0, logVertexData.size() / 3);
+	}
+	if (mode == 1)
+	{
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
 	glBindVertexArray(0);
 
 	glUseProgram(0); //clean up
