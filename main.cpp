@@ -274,10 +274,64 @@ void buildHeatmap()
 			
 		}
 	}
+
+	for (int x = 0; x < 100; x++)
+	{
+		for (int y = 0; y < 100; y++)
+		{
+			heatmapVertexData.push_back(-1.0f + (x*0.02f));
+			heatmapVertexData.push_back(-1.0f + (y*0.02f));
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(1.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(spread[x][y]);
+			// point 2
+			heatmapVertexData.push_back(-1.0f + (x*0.02f));
+			heatmapVertexData.push_back(-0.98f + (y*0.02f));
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(1.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(spread[x][y]);
+			//point 3
+			heatmapVertexData.push_back(-0.98f + (x*0.02f));
+			heatmapVertexData.push_back(-1.0f + (y*0.02f));
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(1.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(spread[x][y]);
+
+			//point 1
+			heatmapVertexData.push_back(-1.0f + (x*0.02f));
+			heatmapVertexData.push_back(-0.98f + (y*0.02f));
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(1.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(spread[x][y]);
+			//point 2
+			heatmapVertexData.push_back(-0.98f + (x*0.02f));
+			heatmapVertexData.push_back(-0.98f + (y*0.02f));
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(1.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(spread[x][y]);
+			//point 3
+			heatmapVertexData.push_back(-0.98f + (x*0.02f));
+			heatmapVertexData.push_back(-1.0f + (y*0.02f));
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(1.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(spread[x][y]);
+		}
+	}
 }
 void buildHistogram()
 {
-	buildHeatmap();
 	int spread[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	float temp;
 	int range = powerVertexData.size();
@@ -463,6 +517,7 @@ void loadPositionFile()
 	{
 		SDL_Log("File not opened correclty!!!\n");
 	}
+	buildHeatmap();
 }
 
 int loadFile()
@@ -659,7 +714,7 @@ void handleInput()
 			int type = loadFile();
 			switch (type) 
 			{
-			case 1: remakeVertexBuffer(positionVertexData);
+			case 1: remakeVertexBuffer(heatmapVertexData);
 				break;
 			case 2: buildHistogram();
 				remakeVertexBuffer(histogramVertexData);
