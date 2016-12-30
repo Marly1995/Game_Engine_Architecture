@@ -230,8 +230,9 @@ void buildHeatmap()
 {
 	int xSpread[100] = { 0 };
 	int ySpread[100] = { 0 };
+	int spread[100][100] = { 0 };
 
-	int range = positionVertexData.size() / 3;
+	int range = positionVertexData.size() / 7;
 	float increment = ((1 / range) * 10);
 
 	float xMin = 0, yMin = 0, xMax = 0, yMax = 0;
@@ -258,24 +259,25 @@ void buildHeatmap()
 		float xTemp = positionVectorData[i].x;
 		float yTemp = positionVectorData[i].y;
 
-		for (int i = 1; i < 101; i++)
+		for (int z = 1; z < 101; z++)
 		{
-			if (xTemp >= xIncrement * i && xTemp < xIncrement * (i+1))
+			if (xTemp >= xIncrement * z && xTemp < xIncrement * (z+1))
 			{
-				xSpread[i - 1]++;
+				for (int p = 1; p < 101; p++)
+				{
+					if (yTemp >= yIncrement * p && yTemp < yIncrement * (p + 1))
+					{
+						spread[z - 1][p - 1]++;
+					}
+				}
 			}
-			if (yTemp >= yIncrement * i && yTemp < yIncrement * (i + 1))
-			{
-				ySpread[i - 1]++;
-			}
+			
 		}
 	}
-
-
 }
 void buildHistogram()
 {
-	//buildHeatmap();
+	buildHeatmap();
 	int spread[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	float temp;
 	int range = powerVertexData.size();
