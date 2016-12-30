@@ -13,6 +13,7 @@ int renderMode = 1;
 vector<glm::vec3> positionData;
 vector<GLfloat> positionVertexData;
 vector<GLfloat> powerVertexData;
+vector<GLfloat> histogramVertexData;
 int positionIterator = 0;
 char* fileDirectory = ("C:/Users/Marlon/Documents/PositionLogFile.txt");
 // end::globalVariables[]
@@ -224,6 +225,61 @@ GLuint createProgram(const std::vector<GLuint> &shaderList)
 	return program;
 }
 // end::createProgram[]
+
+void buildHistogram()
+{
+	int spread[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	float temp;
+	int range = powerVertexData.size();
+	float increment = 2.0f/range;
+	for (int i = 0; i < range; i++)
+	{
+		temp = powerVertexData[i];
+		
+		if (temp <= 300) { spread[0]++; }
+		else if (temp > 300 && temp <= 600) { spread[1]++; }
+		else if (temp > 600 && temp <= 900) { spread[2]++; }
+		else if (temp > 900 && temp <= 1200) { spread[3]++; }
+		else if (temp > 1200 && temp <= 1500) { spread[4]++; }
+		else if (temp > 1500 && temp <= 1800) { spread[5]++; }
+		else if (temp > 1800 && temp <= 2100) { spread[6]++; }
+		else if (temp > 2100 && temp <= 2400) { spread[7]++; }
+		else if (temp > 2400 && temp <= 2700) { spread[8]++; }
+		else if (temp > 2700 && temp <= 3000) { spread[9]++; }
+	}
+	float xpos = -1.0f;
+	for (int i = 0; i < 10; i++)
+	{
+		// point 1
+		histogramVertexData.push_back(xpos);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(0.0f);
+		// point 2
+		histogramVertexData.push_back(xpos);
+		histogramVertexData.push_back(spread[i] * increment);
+		histogramVertexData.push_back(0.0f);
+		//point 3
+		histogramVertexData.push_back(xpos + 0.05f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(0.0f);
+
+		//point 1
+		histogramVertexData.push_back(xpos);
+		histogramVertexData.push_back(spread[i] * increment);
+		histogramVertexData.push_back(0.0f);
+		//point 2
+		histogramVertexData.push_back(xpos + 0.05f);
+		histogramVertexData.push_back(spread[i] * increment);
+		histogramVertexData.push_back(0.0f);
+		//point 3
+		histogramVertexData.push_back(xpos + 0.05f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(0.0f);
+
+		cout << spread[i] << endl;
+		xpos += 0.1f;
+	}
+}
 
 // tag::loadFile[]
 void loadPowerFile()
@@ -526,7 +582,8 @@ void handleInput()
 			{
 			case 1: remakeVertexBuffer(positionVertexData);
 				break;
-			case 2: remakeVertexBuffer(powerVertexData);
+			case 2: buildHistogram();
+				remakeVertexBuffer(histogramVertexData);
 				break;
 			}
 		}
@@ -584,7 +641,7 @@ void render()
 
 	case 2:
 		glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-		glDrawArrays(GL_LINE_STRIP, 0, powerVertexData.size());
+		glDrawArrays(GL_TRIANGLES, 0, histogramVertexData.size() / 3);
 		break;
 
 	}
