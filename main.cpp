@@ -1,22 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <iterator>
-#include <vector>
-#include <algorithm>
-#include <string>
-#include <cassert>
-#include <list>
-
-#include "SDL.h"
-#include <GL/glew.h>
-
-#include <GL/glew.h>
-#include <SDL2/SDL.h>
-
-#define GLM_FORCE_RADIANS // suppress a warning in GLM 0.9.5
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "includes.h";
 
 using namespace std;
 
@@ -27,10 +9,12 @@ SDL_GLContext context; //the SDL_GLContext
 int frameCount = 0;
 std::string frameLine = "";
 
+int renderMode = 1;
 vector<glm::vec3> positionData;
-vector<GLfloat> logVertexData;
+vector<GLfloat> positionVertexData;
+vector<GLfloat> powerVertexData;
 int positionIterator = 0;
-char* fileDirectory = ("C:/Users/Computing/Documents/LogFile.txt");
+char* fileDirectory = ("C:/Users/Marlon/Documents/PositionLogFile.txt");
 // end::globalVariables[]
 
 // tag::loadShader[]
@@ -242,16 +226,52 @@ GLuint createProgram(const std::vector<GLuint> &shaderList)
 // end::createProgram[]
 
 // tag::loadFile[]
-void loadFile()
+void loadPowerFile()
 {
-	logVertexData.clear();
-	string line;
 	ifstream file;
+	string line;
+	string number;
+	float x;
+	positionVertexData.clear();
 	if (fileDirectory != nullptr)
 	{
 		file.open(fileDirectory);
 	}
+	if (file.is_open())
+	{
+		SDL_Log("File opened!\n");
+		int dataPosition = 0;
+		while (getline(file, line))
+		{
+			if (line == "power ")
+			{
+			}
+			else
+			{
+				number = line;
+				x = stof(number);
+				powerVertexData.push_back(x);
+			}
+		}
+		SDL_Log("Should have finished writing!\n");
+		file.close();
+	}
+	else
+	{
+		SDL_Log("File not opened correclty!!!\n");
+	}
+}
+
+void loadPositionFile()
+{
+	ifstream file;
+	string line;
 	string number;
+	positionVertexData.clear();
+	if (fileDirectory != nullptr)
+	{
+		file.open(fileDirectory);
+	}
 	if (file.is_open())
 	{
 		SDL_Log("File opened!\n");
@@ -264,38 +284,42 @@ void loadFile()
 			x = 0;
 			y = 0;
 			z = 0;
-			for (i = 4; i < line.size(); i++)
+			if (line == "position ")
 			{
-				if (line[i] != ',' && line[i] != ')')
-				{
-					number += line[i];
-				}
-				else if (line[i] == ',' && k == 0)
-				{
-					x = stof(number);
-					k++;
-					i += 3;
-					number = "";
-				}
-				else if (line[i] == ',' || line[i] == ')' && k == 1)
-				{
-					y = stof(number);
-					k++;
-					i += 3;
-					number = "";
-				}
-				else if (line[i] == ')' && k == 2)
-				{
-					z = stof(number);
-					number = "";
-				}
 			}
-			positionData.push_back(glm::vec3(x / 3000, y / 3000, z / 3000));
-			//cout << line << "\n";
-			//cout << x << "  " << y << "  " << z << "\n";
-			logVertexData.push_back(x / 3000.0f);
-			logVertexData.push_back(y / 3000.0f);
-			logVertexData.push_back(z / 3000.0f);
+			else
+			{
+				for (i = 4; i < line.size(); i++)
+				{
+					if (line[i] != ',' && line[i] != ')')
+					{
+						number += line[i];
+					}
+					else if (line[i] == ',' && k == 0)
+					{
+						x = stof(number);
+						k++;
+						i += 3;
+						number = "";
+					}
+					else if (line[i] == ',' || line[i] == ')' && k == 1)
+					{
+						y = stof(number);
+						k++;
+						i += 3;
+						number = "";
+					}
+					else if (line[i] == ')' && k == 2)
+					{
+						z = stof(number);
+						number = "";
+					}
+				}
+
+				positionVertexData.push_back(x / 3000.0f);
+				positionVertexData.push_back(y / 3000.0f);
+				positionVertexData.push_back(z / 3000.0f);
+			}
 		}
 		SDL_Log("Should have finished writing!\n");
 		file.close();
@@ -305,6 +329,39 @@ void loadFile()
 		SDL_Log("File not opened correclty!!!\n");
 	}
 }
+
+int loadFile()
+{
+	ifstream file;
+	string line;
+	if (fileDirectory != nullptr)
+	{
+		file.open(fileDirectory);
+	}
+	if (file.is_open())
+	{
+		SDL_Log("File opened!\n");
+		getline(file, line);
+		if (line == "position ")
+		{
+			loadPositionFile();
+			file.close();
+			return 1;
+		}
+		else if (line == "power ")
+		{
+			loadPowerFile();
+			file.close();
+			return 2;
+		}
+	}
+	else
+	{
+		SDL_Log("File not opened correclty!!!\n");
+		return 0;
+	}
+}
+
 // end::loadFile[]
 
 // tag::initializeProgram[]
@@ -312,8 +369,8 @@ void initializeProgram()
 {
 	std::vector<GLuint> shaderList;
 
-	shaderList.push_back(createShader(GL_VERTEX_SHADER, loadShader("C:/Users/Computing/Documents/GitHub/Game_Engine_Architecture/vertexShader.glsl")));
-	shaderList.push_back(createShader(GL_FRAGMENT_SHADER, loadShader("C:/Users/Computing/Documents/GitHub/Game_Engine_Architecture/fragmentShader.glsl")));
+	shaderList.push_back(createShader(GL_VERTEX_SHADER, loadShader("C:/Users/Marlon/Documents/GitHub/Game_Engine_Architecture/vertexShader.glsl")));
+	shaderList.push_back(createShader(GL_FRAGMENT_SHADER, loadShader("C:/Users/Marlon/Documents/GitHub/Game_Engine_Architecture/fragmentShader.glsl")));
 
 	theProgram = createProgram(shaderList);
 	if (theProgram == 0)
@@ -376,12 +433,25 @@ void initializeVertexArrayObject()
 // end::initializeVertexArrayObject[]
 
 // tag::initializeVertexBuffer[]
+
+void remakeVertexBuffer(vector<GLfloat> data)
+{
+	glGenBuffers(1, &vertexDataBufferObject);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat), &data.front(), GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
+
+	initializeVertexArrayObject();
+}
+
 void initializeVertexBuffer()
 {
 	glGenBuffers(1, &vertexDataBufferObject);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, logVertexData.size() * sizeof(GLfloat), &logVertexData.front(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, positionVertexData.size() * sizeof(GLfloat), &positionVertexData.front(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
 
@@ -436,6 +506,10 @@ void handleInput()
 				{
 					//hit escape to exit
 				case SDLK_ESCAPE: done = true;
+					break;
+				case SDLK_1: renderMode = 1;
+					break;
+				case SDLK_2: renderMode = 2;
 				}
 			break;
 
@@ -447,7 +521,14 @@ void handleInput()
 				fileDirectory,
 				win
 			);
-			loadFile();
+			int type = loadFile();
+			switch (type) 
+			{
+			case 1: remakeVertexBuffer(positionVertexData);
+				break;
+			case 2: remakeVertexBuffer(powerVertexData);
+				break;
+			}
 		}
 	}
 }
@@ -490,12 +571,23 @@ void render()
 	//set viewMatrix - how we control the view (viewpoint, view direction, etc)
 	glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
-	//set modelMatrix and draw for triangle 1
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position1);
-	glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-	glLineWidth(5);
-	glDrawArrays(GL_LINE_STRIP, 0, logVertexData.size()/3);
 
+	switch (renderMode)
+	{
+
+	case 1:
+		glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+		glLineWidth(5);
+		glDrawArrays(GL_LINE_STRIP, 0, positionVertexData.size() / 3);
+		break;
+
+	case 2:
+		glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+		glDrawArrays(GL_LINE_STRIP, 0, powerVertexData.size());
+		break;
+
+	}
 	glBindVertexArray(0);
 
 	glUseProgram(0); //clean up
