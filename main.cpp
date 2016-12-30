@@ -232,7 +232,7 @@ void loadPowerFile()
 	string line;
 	string number;
 	float x;
-	positionVertexData.clear();
+	powerVertexData.clear();
 	if (fileDirectory != nullptr)
 	{
 		file.open(fileDirectory);
