@@ -275,7 +275,7 @@ void buildHeatmap()
 }
 void buildHistogram()
 {
-	buildHeatmap();
+	//buildHeatmap();
 	int spread[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	float temp;
 	int range = powerVertexData.size();
@@ -302,27 +302,51 @@ void buildHistogram()
 		histogramVertexData.push_back(xpos);
 		histogramVertexData.push_back(0.0f);
 		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
 		// point 2
 		histogramVertexData.push_back(xpos);
 		histogramVertexData.push_back(spread[i] * increment);
 		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
 		//point 3
 		histogramVertexData.push_back(xpos + 0.05f);
 		histogramVertexData.push_back(0.0f);
 		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
 
 		//point 1
 		histogramVertexData.push_back(xpos);
 		histogramVertexData.push_back(spread[i] * increment);
 		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
 		//point 2
 		histogramVertexData.push_back(xpos + 0.05f);
 		histogramVertexData.push_back(spread[i] * increment);
 		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
 		//point 3
 		histogramVertexData.push_back(xpos + 0.05f);
 		histogramVertexData.push_back(0.0f);
 		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(0.0f);
+		histogramVertexData.push_back(1.0f);
 
 		cout << spread[i] << endl;
 		xpos += 0.1f;
@@ -424,6 +448,10 @@ void loadPositionFile()
 				positionVertexData.push_back(x / 3000.0f);
 				positionVertexData.push_back(y / 3000.0f);
 				positionVertexData.push_back(z / 3000.0f);
+				positionVertexData.push_back(1.0f);
+				positionVertexData.push_back(0.0f);
+				positionVertexData.push_back(0.0f);
+				positionVertexData.push_back(1.0f);
 			}
 		}
 		SDL_Log("Should have finished writing!\n");
@@ -490,7 +518,7 @@ void initializeProgram()
 
 	// tag::glGetAttribLocation[]
 	positionLocation = glGetAttribLocation(theProgram, "position");
-	//vertexColorLocation = glGetAttribLocation(theProgram, "vertexColor");
+	vertexColorLocation = glGetAttribLocation(theProgram, "vertexColor");
 	// end::glGetAttribLocation[]
 
 	// tag::glGetUniformLocation[]
@@ -521,11 +549,11 @@ void initializeVertexArrayObject()
 	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject); //bind vertexDataBufferObject
 
 	glEnableVertexAttribArray(positionLocation); //enable attribute at index positionLocation
-	//glEnableVertexAttribArray(vertexColorLocation); //enable attribute at index vertexColorLocation
+	glEnableVertexAttribArray(vertexColorLocation); //enable attribute at index vertexColorLocation
 
 													// tag::glVertexAttribPointer[]
-	glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0); //specify that position data contains four floats per vertex, and goes into attribute index positionLocation
-	//glVertexAttribPointer(vertexColorLocation, 4, GL_FLOAT, GL_FALSE, (7 * sizeof(GL_FLOAT)), (GLvoid *)(3 * sizeof(GLfloat))); //specify that position data contains four floats per vertex, and goes into attribute index vertexColorLocation
+	glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, (7 * sizeof(GL_FLOAT)), (GLvoid *)(0 * sizeof(GLfloat))); //specify that position data contains four floats per vertex, and goes into attribute index positionLocation
+	glVertexAttribPointer(vertexColorLocation, 4, GL_FLOAT, GL_FALSE, (7 * sizeof(GL_FLOAT)), (GLvoid *)(3 * sizeof(GLfloat))); //specify that position data contains four floats per vertex, and goes into attribute index vertexColorLocation
 																																// end::glVertexAttribPointer[]
 
 	glBindVertexArray(0); //unbind the vertexArrayObject so we can't change it
@@ -659,7 +687,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 void preRender()
 {
 	glViewport(0, 0, 600, 600); //set viewpoint
-	glClearColor(1.0f, 0.0f, 0.0f, 1.0f); //set clear colour
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //set clear colour
 	glClear(GL_COLOR_BUFFER_BIT); //clear the window (technical the scissor box bounds)
 }
 // end::preRender[]
@@ -685,12 +713,12 @@ void render()
 	case 1:
 		glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
 		glLineWidth(5);
-		glDrawArrays(GL_LINE_STRIP, 0, positionVertexData.size() / 3);
+		glDrawArrays(GL_LINE_STRIP, 0, positionVertexData.size() / 7);
 		break;
 
 	case 2:
 		glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-		glDrawArrays(GL_TRIANGLES, 0, histogramVertexData.size() / 3);
+		glDrawArrays(GL_TRIANGLES, 0, histogramVertexData.size() / 7);
 		break;
 
 	}
