@@ -10,10 +10,11 @@ int frameCount = 0;
 std::string frameLine = "";
 
 int renderMode = 1;
-vector<glm::vec3> positionData;
+vector<glm::vec3> positionVectorData;
 vector<GLfloat> positionVertexData;
 vector<GLfloat> powerVertexData;
 vector<GLfloat> histogramVertexData;
+vector<GLfloat> heatmapVertexData;
 int positionIterator = 0;
 char* fileDirectory = ("C:/Users/Marlon/Documents/PositionLogFile.txt");
 // end::globalVariables[]
@@ -225,9 +226,56 @@ GLuint createProgram(const std::vector<GLuint> &shaderList)
 	return program;
 }
 // end::createProgram[]
+void buildHeatmap()
+{
+	int xSpread[100] = { 0 };
+	int ySpread[100] = { 0 };
 
+	int range = positionVertexData.size() / 3;
+	float increment = ((1 / range) * 10);
+
+	float xMin = 0, yMin = 0, xMax = 0, yMax = 0;
+
+	for (int i = 0; i < range; i++)
+	{
+		float xTemp = positionVectorData[i].x;
+		float yTemp = positionVectorData[i].y;
+
+		if (xTemp > xMax) { xMax = xTemp; }
+		if (xTemp < xMin) { xMin = xTemp; }
+		if (yTemp > yMax) { yMax = yTemp; }
+		if (yTemp < yMin) { yMin = yTemp; }
+	}
+
+	float xRange = xMax - xMin;
+	float yRange = yMax - yMin;
+
+	float xIncrement = xRange / 100;
+	float yIncrement = yRange / 100;
+
+	for (int i = 0; i < range; i++)
+	{
+		float xTemp = positionVectorData[i].x;
+		float yTemp = positionVectorData[i].y;
+
+		for (int i = 1; i < 101; i++)
+		{
+			if (xTemp >= xIncrement * i && xTemp < xIncrement * (i+1))
+			{
+				xSpread[i - 1]++;
+			}
+			if (yTemp >= yIncrement * i && yTemp < yIncrement * (i + 1))
+			{
+				ySpread[i - 1]++;
+			}
+		}
+	}
+
+
+}
 void buildHistogram()
 {
+	buildHeatmap();
 	int spread[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	float temp;
 	int range = powerVertexData.size();
@@ -371,6 +419,7 @@ void loadPositionFile()
 						number = "";
 					}
 				}
+				positionVectorData.push_back(glm::vec3(x / 3000.0f, y / 3000.0f, z / 3000.0f));
 
 				positionVertexData.push_back(x / 3000.0f);
 				positionVertexData.push_back(y / 3000.0f);
