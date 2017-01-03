@@ -72,6 +72,9 @@ GLint projectionMatrixLocation;
 
 GLuint vertexDataBufferObject;
 GLuint vertexArrayObject;
+
+vector<GLuint> vertexDataBufferObjectVector;;
+vector<GLuint> vertexArrayObjectVector;
 // end::GLVariables[]
 
 
@@ -282,10 +285,10 @@ void buildHeatmap()
 			heatmapVertexData.push_back(-1.0f + (x*0.02f));
 			heatmapVertexData.push_back(-1.0f + (y*0.02f));
 			heatmapVertexData.push_back(0.0f);
+			heatmapVertexData.push_back(0.0f);
 			heatmapVertexData.push_back(1.0f);
 			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmapVertexData.push_back(spread[x][y] / 5);
 			// point 2
 			heatmapVertexData.push_back(-1.0f + (x*0.02f));
 			heatmapVertexData.push_back(-0.98f + (y*0.02f));
@@ -293,7 +296,7 @@ void buildHeatmap()
 			heatmapVertexData.push_back(1.0f);
 			heatmapVertexData.push_back(0.0f);
 			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmapVertexData.push_back(spread[x][y] / 5);
 			//point 3
 			heatmapVertexData.push_back(-0.98f + (x*0.02f));
 			heatmapVertexData.push_back(-1.0f + (y*0.02f));
@@ -301,7 +304,7 @@ void buildHeatmap()
 			heatmapVertexData.push_back(1.0f);
 			heatmapVertexData.push_back(0.0f);
 			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmapVertexData.push_back(spread[x][y] / 5);
 
 			//point 1
 			heatmapVertexData.push_back(-1.0f + (x*0.02f));
@@ -310,7 +313,7 @@ void buildHeatmap()
 			heatmapVertexData.push_back(1.0f);
 			heatmapVertexData.push_back(0.0f);
 			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmapVertexData.push_back(spread[x][y] / 5);
 			//point 2
 			heatmapVertexData.push_back(-0.98f + (x*0.02f));
 			heatmapVertexData.push_back(-0.98f + (y*0.02f));
@@ -318,7 +321,7 @@ void buildHeatmap()
 			heatmapVertexData.push_back(1.0f);
 			heatmapVertexData.push_back(0.0f);
 			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmapVertexData.push_back(spread[x][y] / 5);
 			//point 3
 			heatmapVertexData.push_back(-0.98f + (x*0.02f));
 			heatmapVertexData.push_back(-1.0f + (y*0.02f));
@@ -326,7 +329,7 @@ void buildHeatmap()
 			heatmapVertexData.push_back(1.0f);
 			heatmapVertexData.push_back(0.0f);
 			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmapVertexData.push_back(spread[x][y] / 5);
 		}
 	}
 }
@@ -622,7 +625,45 @@ void initializeVertexArrayObject()
 }
 // end::initializeVertexArrayObject[]
 
+void initializeMultipleVertexArrayObject(int index)
+{
+	// setup a GL object (a VertexArrayObject) that stores how to access data and from where
+	glGenVertexArrays(1, &vertexArrayObjectVector[index]); //create a Vertex Array Object
+	cout << "Vertex Array Object created OK! GLUint is: " << vertexArrayObjectVector[index] << std::endl;
+
+	glBindVertexArray(vertexArrayObjectVector[index]); //make the just created vertexArrayObject the active one
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObjectVector[index]); //bind vertexDataBufferObject
+
+	glEnableVertexAttribArray(positionLocation); //enable attribute at index positionLocation
+	glEnableVertexAttribArray(vertexColorLocation); //enable attribute at index vertexColorLocation
+
+													// tag::glVertexAttribPointer[]
+	glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, (7 * sizeof(GL_FLOAT)), (GLvoid *)(0 * sizeof(GLfloat))); //specify that position data contains four floats per vertex, and goes into attribute index positionLocation
+	glVertexAttribPointer(vertexColorLocation, 4, GL_FLOAT, GL_FALSE, (7 * sizeof(GL_FLOAT)), (GLvoid *)(3 * sizeof(GLfloat))); //specify that position data contains four floats per vertex, and goes into attribute index vertexColorLocation
+																																// end::glVertexAttribPointer[]
+
+	glBindVertexArray(0); //unbind the vertexArrayObject so we can't change it
+
+						  //cleanup
+	glDisableVertexAttribArray(positionLocation); //disable vertex attribute at index positionLocation
+	glBindBuffer(GL_ARRAY_BUFFER, 0); //unbind array buffer
+
+}
+
 // tag::initializeVertexBuffer[]
+
+void makeMultipleVertexBuffers(vector<GLfloat> data, int index)
+{
+	glGenBuffers(1, &vertexDataBufferObjectVector[index]);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObjectVector[index]);
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat)/ 10, &data.at(index * 42000), GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObjectVector[index] << std::endl;
+
+	initializeMultipleVertexArrayObject(index);
+}
 
 void remakeVertexBuffer(vector<GLfloat> data)
 {
@@ -700,6 +741,8 @@ void handleInput()
 				case SDLK_1: renderMode = 1;
 					break;
 				case SDLK_2: renderMode = 2;
+					break;
+				case SDLK_3: renderMode = 3;
 				}
 			break;
 
@@ -714,9 +757,17 @@ void handleInput()
 			int type = loadFile();
 			switch (type) 
 			{
-			case 1: remakeVertexBuffer(heatmapVertexData);
+			case 1: 
+				buildHeatmap();
+				for (int i = 0; i < 10; i++) 
+					{
+						vertexDataBufferObjectVector.push_back(i+10);
+						vertexArrayObjectVector.push_back(i+10);
+						makeMultipleVertexBuffers(heatmapVertexData, i);
+					}
 				break;
-			case 2: buildHistogram();
+			case 2: 
+				buildHistogram();
 				remakeVertexBuffer(histogramVertexData);
 				break;
 			}
@@ -754,30 +805,55 @@ void render()
 {
 	glUseProgram(theProgram); //installs the program object specified by program as part of current rendering state
 
-	glBindVertexArray(vertexArrayObject);
-
-	//set projectionMatrix - how we go from 3D to 2D
-	glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
-
-	//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-	glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
-
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position1);
 
 	switch (renderMode)
 	{
 
 	case 1:
+		glBindVertexArray(vertexArrayObject);
+
+		//set projectionMatrix - how we go from 3D to 2D
+		glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+
+		//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+		glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+
 		glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
 		glLineWidth(5);
 		glDrawArrays(GL_LINE_STRIP, 0, positionVertexData.size() / 7);
 		break;
 
 	case 2:
+		glBindVertexArray(vertexArrayObject);
+
+		//set projectionMatrix - how we go from 3D to 2D
+		glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+
+		//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+		glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+
 		glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
 		glDrawArrays(GL_TRIANGLES, 0, histogramVertexData.size() / 7);
 		break;
+	case 3:
+		for (int i = 0; i < 10; i++)
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBindVertexArray(vertexArrayObjectVector[i]);
 
+			//set projectionMatrix - how we go from 3D to 2D
+			glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+
+			//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+			glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+
+			glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+			glDrawArrays(GL_TRIANGLES, 0, heatmapVertexData.size() / 70);
+			glDisable(GL_BLEND);
+		}
+		break;
 	}
 	glBindVertexArray(0);
 
