@@ -14,4 +14,7 @@ public:
 
 	DataManager();
 
+	int loadFile(char* fileDirectory);
+	//void loadPowerFile(char* fileDirectory);
+	void loadPositionFile(char* fileDirectory);
 };

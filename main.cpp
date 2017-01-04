@@ -13,7 +13,7 @@ SDL_GLContext context; //the SDL_GLContext
 int frameCount = 0;
 std::string frameLine = "";
 
-int renderMode = 1;
+int renderMode = 0;
 
 DataManager DM = DataManager();
 
@@ -212,108 +212,6 @@ GLuint createProgram(const std::vector<GLuint> &shaderList)
 	return program;
 }
 // end::createProgram[]
-void buildHeatmap()
-{
-	heatmap.vertexData.clear();
-	int spread[100][100] = { 0 };
-
-	int range = positionVertexData.size() / 7;
-
-	float xMin = 0, yMin = 0, xMax = 0, yMax = 0;
-
-	for (int i = 0; i < range; i++)
-	{
-		float xTemp = positionVectorData[i].x;
-		float yTemp = positionVectorData[i].y;
-
-		if (xTemp > xMax) { xMax = xTemp; }
-		if (xTemp < xMin) { xMin = xTemp; }
-		if (yTemp > yMax) { yMax = yTemp; }
-		if (yTemp < yMin) { yMin = yTemp; }
-	}
-
-	float xRange = xMax - xMin;
-	float yRange = yMax - yMin;
-
-	float xIncrement = xRange / 100;
-	float yIncrement = yRange / 100;
-
-	for (int i = 0; i < range; i++)
-	{
-		float xTemp = positionVectorData[i].x;
-		float yTemp = positionVectorData[i].y;
-
-		for (int z = 0; z < 100; z++)
-		{
-			if (xTemp >= xIncrement * z && xTemp < xIncrement * (z+1))
-			{
-				for (int p = 0; p < 100; p++)
-				{
-					if (yTemp >= yIncrement * p && yTemp < yIncrement * (p+1))
-					{
-						spread[z][p]++;
-					}
-				}
-			}
-			
-		}
-	}
-
-	for (int x = 0; x < 100; x++)
-	{
-		for (int y = 0; y < 100; y++)
-		{
-			heatmap.vertexData.push_back(-1.0f + (x*0.02f));
-			heatmap.vertexData.push_back(-1.0f + (y*0.02f));
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(1.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(spread[x][y]);
-			// point 2
-			heatmap.vertexData.push_back(-1.0f + (x*0.02f));
-			heatmap.vertexData.push_back(-0.98f + (y*0.02f));
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(1.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(spread[x][y]);
-			//point 3
-			heatmap.vertexData.push_back(-0.98f + (x*0.02f));
-			heatmap.vertexData.push_back(-1.0f + (y*0.02f));
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(1.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(spread[x][y]);
-
-			//point 1
-			heatmap.vertexData.push_back(-1.0f + (x*0.02f));
-			heatmap.vertexData.push_back(-0.98f + (y*0.02f));
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(1.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(spread[x][y]);
-			//point 2
-			heatmap.vertexData.push_back(-0.98f + (x*0.02f));
-			heatmap.vertexData.push_back(-0.98f + (y*0.02f));
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(1.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(spread[x][y]);
-			//point 3
-			heatmap.vertexData.push_back(-0.98f + (x*0.02f));
-			heatmap.vertexData.push_back(-1.0f + (y*0.02f));
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(1.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(0.0f);
-			heatmap.vertexData.push_back(spread[x][y]);
-		}
-	}
-}
 
 void buildHistogram()
 {
@@ -395,151 +293,6 @@ void buildHistogram()
 	}
 }
 
-// tag::loadFile[]
-void loadPowerFile()
-{
-	ifstream file;
-	string line;
-	string number;
-	float x;
-	powerVertexData.clear();
-	if (fileDirectory != nullptr)
-	{
-		file.open(fileDirectory);
-	}
-	if (file.is_open())
-	{
-		SDL_Log("File opened!\n");
-		int dataPosition = 0;
-		while (getline(file, line))
-		{
-			if (line == "power ")
-			{
-			}
-			else
-			{
-				number = line;
-				x = stof(number);
-				powerVertexData.push_back(x);
-			}
-		}
-		SDL_Log("Should have finished writing!\n");
-		file.close();
-	}
-	else
-	{
-		SDL_Log("File not opened correclty!!!\n");
-	}
-}
-
-void loadPositionFile()
-{
-	ifstream file;
-	string line;
-	string number;
-	positionVertexData.clear();
-	positionVectorData.clear();
-	if (fileDirectory != nullptr)
-	{
-		file.open(fileDirectory);
-	}
-	if (file.is_open())
-	{
-		SDL_Log("File opened!\n");
-		int dataPosition = 0;
-		while (getline(file, line))
-		{
-			int i;
-			int k = 0;
-			float x, y, z;
-			x = 0;
-			y = 0;
-			z = 0;
-			if (line == "position ")
-			{
-			}
-			else
-			{
-				for (i = 4; i < line.size(); i++)
-				{
-					if (line[i] != ',' && line[i] != ')')
-					{
-						number += line[i];
-					}
-					else if (line[i] == ',' && k == 0)
-					{
-						x = stof(number);
-						k++;
-						i += 3;
-						number = "";
-					}
-					else if ((line[i] == ',' && k == 1 )|| (line[i] == ')' && k == 1))
-					{
-						y = stof(number);
-						k++;
-						i += 3;
-						number = "";
-					}
-					else if (line[i] == ')' && k == 2)
-					{
-						z = stof(number);
-						number = "";						
-					}
-				}
-				positionVectorData.push_back(glm::vec3(x + 3000, y + 3000, z));
-
-				positionVertexData.push_back(x / 3000.0f);
-				positionVertexData.push_back(y / 3000.0f);
-				positionVertexData.push_back(z / 3000.0f);
-				positionVertexData.push_back(1.0f);
-				positionVertexData.push_back(0.0f);
-				positionVertexData.push_back(0.0f);
-				positionVertexData.push_back(1.0f);
-			}
-		}
-		SDL_Log("Should have finished writing!\n");
-		file.close();
-	}
-	else
-	{
-		SDL_Log("File not opened correclty!!!\n");
-	}
-}
-
-int loadFile()
-{
-	ifstream file;
-	string line;
-	if (fileDirectory != nullptr)
-	{
-		file.open(fileDirectory);
-	}
-	if (file.is_open())
-	{
-		SDL_Log("File opened!\n");
-		getline(file, line);
-		if (line == "position ")
-		{
-			loadPositionFile();
-			file.close();
-			return 1;
-		}
-		else if (line == "power ")
-		{
-			loadPowerFile();
-			file.close();
-			return 2;
-		}
-	}
-	else
-	{
-		SDL_Log("File not opened correclty!!!\n");
-		return 0;
-	}
-}
-
-// end::loadFile[]
-
 // tag::initializeProgram[]
 void initializeProgram()
 {
@@ -608,15 +361,15 @@ void initializeVertexArrayObject()
 }
 // end::initializeVertexArrayObject[]
 
-void initializeMultipleVertexArrayObject(int index)
+void initializeMultipleVertexArrayObject(int num, int index)
 {
 	// setup a GL object (a VertexArrayObject) that stores how to access data and from where
-	glGenVertexArrays(1, &heatmap.vertexObject[index]); //create a Vertex Array Object
-	cout << "Vertex Array Object created OK! GLUint is: " << heatmap.vertexObject[index] << std::endl;
+	glGenVertexArrays(1, &DM.heatmaps[num].vertexObject[index]); //create a Vertex Array Object
+	cout << "Vertex Array Object created OK! GLUint is: " << DM.heatmaps[num].vertexObject[index] << std::endl;
 
-	glBindVertexArray(heatmap.vertexObject[index]); //make the just created vertexArrayObject the active one
+	glBindVertexArray(DM.heatmaps[num].vertexObject[index]); //make the just created vertexArrayObject the active one
 
-	glBindBuffer(GL_ARRAY_BUFFER, heatmap.vertexBuffer[index]); //bind vertexDataBufferObject
+	glBindBuffer(GL_ARRAY_BUFFER, DM.heatmaps[num].vertexBuffer[index]); //bind vertexDataBufferObject
 
 	glEnableVertexAttribArray(positionLocation); //enable attribute at index positionLocation
 	glEnableVertexAttribArray(vertexColorLocation); //enable attribute at index vertexColorLocation
@@ -636,16 +389,16 @@ void initializeMultipleVertexArrayObject(int index)
 
 // tag::initializeVertexBuffer[]
 
-void makeMultipleVertexBuffers(vector<GLfloat> data, int index)
+void makeMultipleVertexBuffers(vector<GLfloat> data, int num, int index)
 {
-	glGenBuffers(1, &heatmap.vertexBuffer[index]);
+	glGenBuffers(1, &DM.heatmaps[num].vertexBuffer[index]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, heatmap.vertexBuffer[index]);
+	glBindBuffer(GL_ARRAY_BUFFER, DM.heatmaps[num].vertexBuffer[index]);
 	glBufferData(GL_ARRAY_BUFFER, (data.size() * sizeof(GLfloat))/ 10, &data.at(index * 42000), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	cout << "vertexDataBufferObject created OK! GLUint is: " << heatmap.vertexBuffer[index] << std::endl;
+	cout << "vertexDataBufferObject created OK! GLUint is: " << DM.heatmaps[num].vertexBuffer[index] << std::endl;
 
-	initializeMultipleVertexArrayObject(index);
+	initializeMultipleVertexArrayObject(num, index);
 }
 
 void remakeVertexBuffer(vector<GLfloat> data)
@@ -678,7 +431,7 @@ void loadAssets()
 {
 	initializeProgram(); //create GLSL Shaders, link into a GLSL program, and get IDs of attributes and variables
 
-	initializeVertexBuffer(); //load data into a vertex buffer
+	//initializeVertexBuffer(); //load data into a vertex buffer
 
 	cout << "Loaded Assets OK!\n";
 }
@@ -737,17 +490,17 @@ void handleInput()
 				fileDirectory,
 				win
 			);
-			int type = loadFile();
+			int type = DM.loadFile(fileDirectory);
 			switch (type) 
 			{
 			case 1: 
-				buildHeatmap();
-				for (int i = 0; i < 10; i++) 
+				for (int i = 0; i < DM.heatmaps.size(); i++)
+				{
+					for (int x = 0; x < DM.heatmaps[i].vertexBuffer.size(); x++)
 					{
-						heatmap.vertexBuffer.push_back(i);
-						heatmap.vertexObject.push_back(i);
-						makeMultipleVertexBuffers(heatmap.vertexData, i);
+						makeMultipleVertexBuffers(DM.heatmaps[i].vertexData, i, x);
 					}
+				}
 				break;
 			case 2: 
 				buildHistogram();
@@ -793,6 +546,8 @@ void render()
 
 	switch (renderMode)
 	{
+	case 0:
+
 
 	case 1:
 		glBindVertexArray(vertexArrayObject);
@@ -821,18 +576,21 @@ void render()
 		glDrawArrays(GL_TRIANGLES, 0, histogramVertexData.size() / 7);
 		break;
 	case 3:
-		for (int i = 0; i < 10; i++)
+		for (int x = 0; x < DM.heatmaps.size(); x++)
 		{
-			glBindVertexArray(heatmap.vertexObject[i]);
+			for (int i = 0; i < 10; i++)
+			{
+				glBindVertexArray(DM.heatmaps[x].vertexObject[i]);
 
-			//set projectionMatrix - how we go from 3D to 2D
-			glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+				//set projectionMatrix - how we go from 3D to 2D
+				glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
 
-			//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-			glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+				//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+				glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
-			glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-			glDrawArrays(GL_TRIANGLES, 0, heatmap.vertexData.size() / 70);
+				glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+				glDrawArrays(GL_TRIANGLES, 0, DM.heatmaps[x].vertexData.size() / 70);
+			}
 		}
 		break;
 	}
@@ -867,7 +625,6 @@ int main(int argc, char* args[])
 	exeName = args[0];
 	//setup
 	//- do just once
-	loadFile();
 
 	initialise();
 
