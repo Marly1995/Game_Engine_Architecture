@@ -1,4 +1,8 @@
-#include "includes.h";
+#include "includes.h"
+#include "src/Heatmap.h"
+#include "src/Histogram.h"
+#include "src/Trajectory.h"
+#include "src/DataManager.h"
 
 using namespace std;
 
@@ -10,11 +14,14 @@ int frameCount = 0;
 std::string frameLine = "";
 
 int renderMode = 1;
+
+DataManager DM = DataManager();
+
 vector<glm::vec3> positionVectorData;
 vector<GLfloat> positionVertexData;
 vector<GLfloat> powerVertexData;
 vector<GLfloat> histogramVertexData;
-vector<GLfloat> heatmapVertexData;
+
 int positionIterator = 0;
 char* fileDirectory = ("C:/Users/Marlon/Documents/PositionLogFile.txt");
 // end::globalVariables[]
@@ -41,27 +48,10 @@ std::string loadShader(const string filePath) {
 //our variables
 bool done = false;
 
-// tag::vertexData[]
-//the data about our geometry
-const GLfloat vertexData[] = {
-	//	 X        Y            Z          R     G     B      A
-	0.000f,  0.500f,  0.000f,    
-	-0.433f, -0.250f,  0.000f,   
-	0.433f, -0.250f,  0.000f
-};
-// end::vertexData[]
-
-// tag::gameState[]
-//the translation vector we'll pass to our GLSL program
 glm::vec3 position1 = { 0.0f, 0.0f, 0.0f };
-// end::gameState[]
 
-// tag::GLVariables[]
-//our GL and GLSL variables
-//programIDs
-GLuint theProgram; //GLuint that we'll fill in to refer to the GLSL program (only have 1 at this point)
+GLuint theProgram; 
 
-				   //attribute locations
 GLint positionLocation; //GLuint that we'll fill in with the location of the `position` attribute in the GLSL
 GLint vertexColorLocation; //GLuint that we'll fill in with the location of the `vertexColor` attribute in the GLSL
 
@@ -73,14 +63,7 @@ GLint projectionMatrixLocation;
 GLuint vertexDataBufferObject;
 GLuint vertexArrayObject;
 
-vector<GLuint> vertexDataBufferObjectVector;;
-vector<GLuint> vertexArrayObjectVector;
 // end::GLVariables[]
-
-
-
-// end Global Variables
-/////////////////////////
 
 // tag::initialise[]
 void initialise()
@@ -231,7 +214,7 @@ GLuint createProgram(const std::vector<GLuint> &shaderList)
 // end::createProgram[]
 void buildHeatmap()
 {
-	heatmapVertexData.clear();
+	heatmap.vertexData.clear();
 	int spread[100][100] = { 0 };
 
 	int range = positionVertexData.size() / 7;
@@ -280,57 +263,58 @@ void buildHeatmap()
 	{
 		for (int y = 0; y < 100; y++)
 		{
-			heatmapVertexData.push_back(-1.0f + (x*0.02f));
-			heatmapVertexData.push_back(-1.0f + (y*0.02f));
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(1.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmap.vertexData.push_back(-1.0f + (x*0.02f));
+			heatmap.vertexData.push_back(-1.0f + (y*0.02f));
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(1.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(spread[x][y]);
 			// point 2
-			heatmapVertexData.push_back(-1.0f + (x*0.02f));
-			heatmapVertexData.push_back(-0.98f + (y*0.02f));
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(1.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmap.vertexData.push_back(-1.0f + (x*0.02f));
+			heatmap.vertexData.push_back(-0.98f + (y*0.02f));
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(1.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(spread[x][y]);
 			//point 3
-			heatmapVertexData.push_back(-0.98f + (x*0.02f));
-			heatmapVertexData.push_back(-1.0f + (y*0.02f));
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(1.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmap.vertexData.push_back(-0.98f + (x*0.02f));
+			heatmap.vertexData.push_back(-1.0f + (y*0.02f));
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(1.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(spread[x][y]);
 
 			//point 1
-			heatmapVertexData.push_back(-1.0f + (x*0.02f));
-			heatmapVertexData.push_back(-0.98f + (y*0.02f));
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(1.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmap.vertexData.push_back(-1.0f + (x*0.02f));
+			heatmap.vertexData.push_back(-0.98f + (y*0.02f));
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(1.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(spread[x][y]);
 			//point 2
-			heatmapVertexData.push_back(-0.98f + (x*0.02f));
-			heatmapVertexData.push_back(-0.98f + (y*0.02f));
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(1.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmap.vertexData.push_back(-0.98f + (x*0.02f));
+			heatmap.vertexData.push_back(-0.98f + (y*0.02f));
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(1.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(spread[x][y]);
 			//point 3
-			heatmapVertexData.push_back(-0.98f + (x*0.02f));
-			heatmapVertexData.push_back(-1.0f + (y*0.02f));
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(1.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(0.0f);
-			heatmapVertexData.push_back(spread[x][y]);
+			heatmap.vertexData.push_back(-0.98f + (x*0.02f));
+			heatmap.vertexData.push_back(-1.0f + (y*0.02f));
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(1.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(0.0f);
+			heatmap.vertexData.push_back(spread[x][y]);
 		}
 	}
 }
+
 void buildHistogram()
 {
 	histogramVertexData.clear();
@@ -627,12 +611,12 @@ void initializeVertexArrayObject()
 void initializeMultipleVertexArrayObject(int index)
 {
 	// setup a GL object (a VertexArrayObject) that stores how to access data and from where
-	glGenVertexArrays(1, &vertexArrayObjectVector[index]); //create a Vertex Array Object
-	cout << "Vertex Array Object created OK! GLUint is: " << vertexArrayObjectVector[index] << std::endl;
+	glGenVertexArrays(1, &heatmap.vertexObject[index]); //create a Vertex Array Object
+	cout << "Vertex Array Object created OK! GLUint is: " << heatmap.vertexObject[index] << std::endl;
 
-	glBindVertexArray(vertexArrayObjectVector[index]); //make the just created vertexArrayObject the active one
+	glBindVertexArray(heatmap.vertexObject[index]); //make the just created vertexArrayObject the active one
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObjectVector[index]); //bind vertexDataBufferObject
+	glBindBuffer(GL_ARRAY_BUFFER, heatmap.vertexBuffer[index]); //bind vertexDataBufferObject
 
 	glEnableVertexAttribArray(positionLocation); //enable attribute at index positionLocation
 	glEnableVertexAttribArray(vertexColorLocation); //enable attribute at index vertexColorLocation
@@ -654,12 +638,12 @@ void initializeMultipleVertexArrayObject(int index)
 
 void makeMultipleVertexBuffers(vector<GLfloat> data, int index)
 {
-	glGenBuffers(1, &vertexDataBufferObjectVector[index]);
+	glGenBuffers(1, &heatmap.vertexBuffer[index]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObjectVector[index]);
+	glBindBuffer(GL_ARRAY_BUFFER, heatmap.vertexBuffer[index]);
 	glBufferData(GL_ARRAY_BUFFER, (data.size() * sizeof(GLfloat))/ 10, &data.at(index * 42000), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObjectVector[index] << std::endl;
+	cout << "vertexDataBufferObject created OK! GLUint is: " << heatmap.vertexBuffer[index] << std::endl;
 
 	initializeMultipleVertexArrayObject(index);
 }
@@ -760,9 +744,9 @@ void handleInput()
 				buildHeatmap();
 				for (int i = 0; i < 10; i++) 
 					{
-						vertexDataBufferObjectVector.push_back(i);
-						vertexArrayObjectVector.push_back(i);
-						makeMultipleVertexBuffers(heatmapVertexData, i);
+						heatmap.vertexBuffer.push_back(i);
+						heatmap.vertexObject.push_back(i);
+						makeMultipleVertexBuffers(heatmap.vertexData, i);
 					}
 				break;
 			case 2: 
@@ -839,7 +823,7 @@ void render()
 	case 3:
 		for (int i = 0; i < 10; i++)
 		{
-			glBindVertexArray(vertexArrayObjectVector[i]);
+			glBindVertexArray(heatmap.vertexObject[i]);
 
 			//set projectionMatrix - how we go from 3D to 2D
 			glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
@@ -848,7 +832,7 @@ void render()
 			glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
 			glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-			glDrawArrays(GL_TRIANGLES, 0, heatmapVertexData.size() / 70);
+			glDrawArrays(GL_TRIANGLES, 0, heatmap.vertexData.size() / 70);
 		}
 		break;
 	}
