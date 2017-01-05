@@ -11,9 +11,11 @@ public:
 	vector<glm::vec3> vectorData;
 	vector<GLuint> vertexBuffer;
 	vector<GLuint> vertexObject;
+	glm::vec3 color;
 
 	Heatmap();
 
 	void BuildHeatmap();
+	void PickColor(int index);
 	
 };

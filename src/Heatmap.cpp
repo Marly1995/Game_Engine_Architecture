@@ -5,6 +5,26 @@ Heatmap::Heatmap()
 
 }
 
+void Heatmap::PickColor(int index)
+{
+	switch (index)
+	{
+	case 0:
+		color = glm::vec3(1.0f, 0.0f, 0.0f);
+		break;
+	case 1:
+		color = glm::vec3(0.0f, 1.0f, 0.0f);
+		break;
+	case 2:
+		color = glm::vec3(0.0f, 0.0f, 1.0f);
+		break;
+	case 3:
+		color = glm::vec3(1.0f, 1.0f, 1.0f);
+		break;
+	}
+}
+
+
 void Heatmap::BuildHeatmap()
 {
 	float spread[100][100] = { 0 };
@@ -59,50 +79,50 @@ void Heatmap::BuildHeatmap()
 			vertexData.push_back(-1.0f + (x*0.02f));
 			vertexData.push_back(-1.0f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(1.0f);
-			vertexData.push_back(0.0f);
-			vertexData.push_back(0.0f);
+			vertexData.push_back(color.x);
+			vertexData.push_back(color.y);
+			vertexData.push_back(color.z);
 			vertexData.push_back(spread[x][y]);
 			// point 2
 			vertexData.push_back(-1.0f + (x*0.02f));
 			vertexData.push_back(-0.98f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(1.0f);
-			vertexData.push_back(0.0f);
-			vertexData.push_back(0.0f);
+			vertexData.push_back(color.x);
+			vertexData.push_back(color.y);
+			vertexData.push_back(color.z);
 			vertexData.push_back(spread[x][y]);
 			//point 3
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-1.0f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(1.0f);
-			vertexData.push_back(0.0f);
-			vertexData.push_back(0.0f);
+			vertexData.push_back(color.x);
+			vertexData.push_back(color.y);
+			vertexData.push_back(color.z);
 			vertexData.push_back(spread[x][y]);
 
 			//point 1
 			vertexData.push_back(-1.0f + (x*0.02f));
 			vertexData.push_back(-0.98f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(1.0f);
-			vertexData.push_back(0.0f);
-			vertexData.push_back(0.0f);
+			vertexData.push_back(color.x);
+			vertexData.push_back(color.y);
+			vertexData.push_back(color.z);
 			vertexData.push_back(spread[x][y]);
 			//point 2
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-0.98f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(1.0f);
-			vertexData.push_back(0.0f);
-			vertexData.push_back(0.0f);
+			vertexData.push_back(color.x);
+			vertexData.push_back(color.y);
+			vertexData.push_back(color.z);
 			vertexData.push_back(spread[x][y]);
 			//point 3
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-1.0f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(1.0f);
-			vertexData.push_back(0.0f);
-			vertexData.push_back(0.0f);
+			vertexData.push_back(color.x);
+			vertexData.push_back(color.y);
+			vertexData.push_back(color.z);
 			vertexData.push_back(spread[x][y]);
 		}
 	}

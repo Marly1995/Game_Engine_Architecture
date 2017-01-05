@@ -79,6 +79,8 @@ void DataManager::loadPositionFile(char* fileDirectory)
 {
 	Heatmap tempHeatmap = Heatmap();
 	Trajectory tempTrajectory = Trajectory();
+	tempTrajectory.BuildTrajectory(trajectories.size());
+	tempHeatmap.PickColor(heatmaps.size());
 	ifstream file;
 	string line;
 	string number;
@@ -134,17 +136,17 @@ void DataManager::loadPositionFile(char* fileDirectory)
 				tempHeatmap.vertexData.push_back(x / 3000.0f);
 				tempHeatmap.vertexData.push_back(y / 3000.0f);
 				tempHeatmap.vertexData.push_back(z / 3000.0f);
-				tempHeatmap.vertexData.push_back(1.0f);
-				tempHeatmap.vertexData.push_back(0.0f);
-				tempHeatmap.vertexData.push_back(0.0f);
+				tempHeatmap.vertexData.push_back(tempHeatmap.color.x);
+				tempHeatmap.vertexData.push_back(tempHeatmap.color.y);
+				tempHeatmap.vertexData.push_back(tempHeatmap.color.z);
 				tempHeatmap.vertexData.push_back(1.0f);
 
 				tempTrajectory.vertexData.push_back(x / 3000.0f);
 				tempTrajectory.vertexData.push_back(y / 3000.0f);
 				tempTrajectory.vertexData.push_back(z / 3000.0f);
-				tempTrajectory.vertexData.push_back(1.0f);
-				tempTrajectory.vertexData.push_back(0.0f);
-				tempTrajectory.vertexData.push_back(0.0f);
+				tempTrajectory.vertexData.push_back(tempTrajectory.color.x);
+				tempTrajectory.vertexData.push_back(tempTrajectory.color.y);
+				tempTrajectory.vertexData.push_back(tempTrajectory.color.z);
 				tempTrajectory.vertexData.push_back(1.0f);
 			}
 		}
@@ -155,7 +157,6 @@ void DataManager::loadPositionFile(char* fileDirectory)
 	{
 		SDL_Log("File not opened correclty!!!\n");
 	}
-	tempTrajectory.BuildTrajectory(trajectories.size());
 	trajectories.push_back(tempTrajectory);
 
 	tempHeatmap.BuildHeatmap();

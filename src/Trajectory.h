@@ -11,6 +11,7 @@ public:
 	vector<GLfloat> vertexData;
 	GLuint vertexBuffer;
 	GLuint vertexObject;
+	glm::vec3 color;
 
 	Trajectory();
 
