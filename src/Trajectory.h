@@ -8,4 +8,12 @@ class Trajectory
 {
 public:
 
+	vector<GLfloat> vertexData;
+	GLuint vertexBuffer;
+	GLuint vertexObject;
+
+	Trajectory();
+
+	void BuildTrajectory(int index);
+
 };

@@ -253,7 +253,7 @@ void initializeProgram()
 // end::initializeProgram[]
 
 // tag::initializeVertexArrayObject[]
-void initializeVertexArrayObject(int index)
+void initializeHistogramVertexArrayObject(int index)
 {
 	// setup a GL object (a VertexArrayObject) that stores how to access data and from where
 	glGenVertexArrays(1, &DM.histograms[index].vertexObject); //create a Vertex Array Object
@@ -280,7 +280,7 @@ void initializeVertexArrayObject(int index)
 }
 // end::initializeVertexArrayObject[]
 
-void initializeMultipleVertexArrayObject(int num, int index)
+void initializeHeatmapVertexArrayObject(int num, int index)
 {
 	// setup a GL object (a VertexArrayObject) that stores how to access data and from where
 	glGenVertexArrays(1, &DM.heatmaps[num].vertexObject[index]); //create a Vertex Array Object
@@ -306,9 +306,35 @@ void initializeMultipleVertexArrayObject(int num, int index)
 
 }
 
+void initializeTrajectoryVertexArrayObject(int index)
+{
+	// setup a GL object (a VertexArrayObject) that stores how to access data and from where
+	glGenVertexArrays(1, &DM.trajectories[index].vertexObject); //create a Vertex Array Object
+	cout << "Vertex Array Object created OK! GLUint is: " << DM.trajectories[index].vertexObject << std::endl;
+
+	glBindVertexArray(DM.trajectories[index].vertexObject); //make the just created vertexArrayObject the active one
+
+	glBindBuffer(GL_ARRAY_BUFFER, DM.trajectories[index].vertexBuffer); //bind vertexDataBufferObject
+
+	glEnableVertexAttribArray(positionLocation); //enable attribute at index positionLocation
+	glEnableVertexAttribArray(vertexColorLocation); //enable attribute at index vertexColorLocation
+
+													// tag::glVertexAttribPointer[]
+	glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, (7 * sizeof(GL_FLOAT)), (GLvoid *)(0 * sizeof(GLfloat))); //specify that position data contains four floats per vertex, and goes into attribute index positionLocation
+	glVertexAttribPointer(vertexColorLocation, 4, GL_FLOAT, GL_FALSE, (7 * sizeof(GL_FLOAT)), (GLvoid *)(3 * sizeof(GLfloat))); //specify that position data contains four floats per vertex, and goes into attribute index vertexColorLocation
+																																// end::glVertexAttribPointer[]
+
+	glBindVertexArray(0); //unbind the vertexArrayObject so we can't change it
+
+						  //cleanup
+	glDisableVertexAttribArray(positionLocation); //disable vertex attribute at index positionLocation
+	glBindBuffer(GL_ARRAY_BUFFER, 0); //unbind array buffer
+
+}
+
 // tag::initializeVertexBuffer[]
 
-void makeMultipleVertexBuffers(vector<GLfloat> data, int num, int index)
+void initializeHeatmapVertexBuffers(vector<GLfloat> data, int num, int index)
 {
 	glGenBuffers(1, &DM.heatmaps[num].vertexBuffer[index]);
 
@@ -317,31 +343,31 @@ void makeMultipleVertexBuffers(vector<GLfloat> data, int num, int index)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	cout << "vertexDataBufferObject created OK! GLUint is: " << DM.heatmaps[num].vertexBuffer[index] << std::endl;
 
-	initializeMultipleVertexArrayObject(num, index);
+	initializeHeatmapVertexArrayObject(num, index);
 }
 
-void remakeVertexBuffer(vector<GLfloat> data, int index)
+void initializeHistogramVertexBuffer(vector<GLfloat> data, int index)
 {
 	glGenBuffers(1, &DM.histograms[index].vertexBuffer);
 
 	glBindBuffer(GL_ARRAY_BUFFER, DM.histograms[index].vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat), &data.front(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
+	cout << "vertexDataBufferObject created OK! GLUint is: " << DM.histograms[index].vertexBuffer << std::endl;
 
-	initializeVertexArrayObject(index);
+	initializeHistogramVertexArrayObject(index);
 }
 
-void initializeVertexBuffer()
+void initializeTrajectoryVertexBuffer(vector<GLfloat> data,  int index)
 {
-	glGenBuffers(1, &vertexDataBufferObject);
+	glGenBuffers(1, &DM.trajectories[index].vertexBuffer);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, positionVertexData.size() * sizeof(GLfloat), &positionVertexData.front(), GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, DM.trajectories[index].vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat), &data.front(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
+	cout << "vertexDataBufferObject created OK! GLUint is: " << DM.trajectories[index].vertexBuffer << std::endl;
 
-	initializeVertexArrayObject(5);
+	initializeTrajectoryVertexArrayObject(index);
 }
 // end::initializeVertexBuffer[]
 
@@ -413,18 +439,22 @@ void handleInput()
 			switch (type) 
 			{
 			case 1: 
+				for (int p = 0; p < DM.trajectories.size(); p++)
+				{
+					initializeTrajectoryVertexBuffer(DM.trajectories[p].vertexData, p);
+				}
 				for (int i = 0; i < DM.heatmaps.size(); i++)
 				{
 					for (int x = 0; x < DM.heatmaps[i].vertexBuffer.size(); x++)
 					{
-						makeMultipleVertexBuffers(DM.heatmaps[i].vertexData, i, x);
+						initializeHeatmapVertexBuffers(DM.heatmaps[i].vertexData, i, x);
 					}
 				}
 				break;
 			case 2: 
 				for (int i = 0; i < DM.histograms.size(); i++)
 				{
-					remakeVertexBuffer(DM.histograms[i].vertexData, i);
+					initializeHistogramVertexBuffer(DM.histograms[i].vertexData, i);
 				}
 				break;
 			}
@@ -471,17 +501,20 @@ void render()
 		break;
 
 	case 1:
-		glBindVertexArray(vertexArrayObject);
+		for (int x = 0; x < DM.trajectories.size(); x++)
+		{
+			glBindVertexArray(DM.trajectories[x].vertexObject);
 
-		//set projectionMatrix - how we go from 3D to 2D
-		glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+			//set projectionMatrix - how we go from 3D to 2D
+			glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
 
-		//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-		glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+			//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+			glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
-		glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-		glLineWidth(5);
-		glDrawArrays(GL_LINE_STRIP, 0, positionVertexData.size() / 7);
+			glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+			glLineWidth(5);
+			glDrawArrays(GL_LINE_STRIP, 0, DM.trajectories[x].vertexData.size() / 7);
+		}
 		break;
 
 	case 2:

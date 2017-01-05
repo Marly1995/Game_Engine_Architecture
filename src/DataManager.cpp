@@ -78,6 +78,7 @@ void DataManager::loadPowerFile(char* fileDirectory)
 void DataManager::loadPositionFile(char* fileDirectory)
 {
 	Heatmap tempHeatmap = Heatmap();
+	Trajectory tempTrajectory = Trajectory();
 	ifstream file;
 	string line;
 	string number;
@@ -137,6 +138,14 @@ void DataManager::loadPositionFile(char* fileDirectory)
 				tempHeatmap.vertexData.push_back(0.0f);
 				tempHeatmap.vertexData.push_back(0.0f);
 				tempHeatmap.vertexData.push_back(1.0f);
+
+				tempTrajectory.vertexData.push_back(x / 3000.0f);
+				tempTrajectory.vertexData.push_back(y / 3000.0f);
+				tempTrajectory.vertexData.push_back(z / 3000.0f);
+				tempTrajectory.vertexData.push_back(1.0f);
+				tempTrajectory.vertexData.push_back(0.0f);
+				tempTrajectory.vertexData.push_back(0.0f);
+				tempTrajectory.vertexData.push_back(1.0f);
 			}
 		}
 		SDL_Log("Should have finished writing!\n");
@@ -146,6 +155,9 @@ void DataManager::loadPositionFile(char* fileDirectory)
 	{
 		SDL_Log("File not opened correclty!!!\n");
 	}
+	tempTrajectory.BuildTrajectory(trajectories.size());
+	trajectories.push_back(tempTrajectory);
+
 	tempHeatmap.BuildHeatmap();
 	heatmaps.push_back(tempHeatmap);
 }
