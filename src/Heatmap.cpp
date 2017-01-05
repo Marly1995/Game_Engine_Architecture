@@ -30,8 +30,6 @@ void Heatmap::BuildHeatmap()
 	float xIncrement = xRange / 100;
 	float yIncrement = yRange / 100;
 
-	int spreadMax = 0;
-
 	for (int i = 0; i < range; i++)
 	{
 		float xTemp = vectorData[i].x;
@@ -45,8 +43,7 @@ void Heatmap::BuildHeatmap()
 				{
 					if (yTemp >= yIncrement * p && yTemp < yIncrement * (p + 1))
 					{
-						spread[z][p]++;
-						if (spread[z][p] > spreadMax) { spreadMax = spread[z][p]; }
+						spread[z][p] += 0.1f;
 					}
 				}
 			}
@@ -65,7 +62,7 @@ void Heatmap::BuildHeatmap()
 			vertexData.push_back(1.0f);
 			vertexData.push_back(0.0f);
 			vertexData.push_back(0.0f);
-			vertexData.push_back(spread[x][y] / 4);
+			vertexData.push_back(spread[x][y]);
 			// point 2
 			vertexData.push_back(-1.0f + (x*0.02f));
 			vertexData.push_back(-0.98f + (y*0.02f));
@@ -73,7 +70,7 @@ void Heatmap::BuildHeatmap()
 			vertexData.push_back(1.0f);
 			vertexData.push_back(0.0f);
 			vertexData.push_back(0.0f);
-			vertexData.push_back(spread[x][y] / 4);
+			vertexData.push_back(spread[x][y]);
 			//point 3
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-1.0f + (y*0.02f));
@@ -81,7 +78,7 @@ void Heatmap::BuildHeatmap()
 			vertexData.push_back(1.0f);
 			vertexData.push_back(0.0f);
 			vertexData.push_back(0.0f);
-			vertexData.push_back(spread[x][y] / 4);
+			vertexData.push_back(spread[x][y]);
 
 			//point 1
 			vertexData.push_back(-1.0f + (x*0.02f));
@@ -90,7 +87,7 @@ void Heatmap::BuildHeatmap()
 			vertexData.push_back(1.0f);
 			vertexData.push_back(0.0f);
 			vertexData.push_back(0.0f);
-			vertexData.push_back(spread[x][y] / 4);
+			vertexData.push_back(spread[x][y]);
 			//point 2
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-0.98f + (y*0.02f));
@@ -98,7 +95,7 @@ void Heatmap::BuildHeatmap()
 			vertexData.push_back(1.0f);
 			vertexData.push_back(0.0f);
 			vertexData.push_back(0.0f);
-			vertexData.push_back(spread[x][y] / 4);
+			vertexData.push_back(spread[x][y]);
 			//point 3
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-1.0f + (y*0.02f));
@@ -106,7 +103,7 @@ void Heatmap::BuildHeatmap()
 			vertexData.push_back(1.0f);
 			vertexData.push_back(0.0f);
 			vertexData.push_back(0.0f);
-			vertexData.push_back(spread[x][y] / 4);
+			vertexData.push_back(spread[x][y]);
 		}
 	}
 
