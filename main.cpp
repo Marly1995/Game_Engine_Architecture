@@ -452,7 +452,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 void preRender()
 {
 	glViewport(0, 0, 600, 600); //set viewpoint
-	glClearColor(0.0f, 1.0f, 0.0f, 1.0f); //set clear colour
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //set clear colour
 	glClear(GL_COLOR_BUFFER_BIT); //clear the window (technical the scissor box bounds)
 }
 // end::preRender[]
@@ -461,8 +461,8 @@ void preRender()
 void render()
 {
 	glUseProgram(theProgram); //installs the program object specified by program as part of current rendering state
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position1);
 
 	switch (renderMode)
