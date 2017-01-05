@@ -20,7 +20,6 @@ DataManager DM = DataManager();
 vector<glm::vec3> positionVectorData;
 vector<GLfloat> positionVertexData;
 vector<GLfloat> powerVertexData;
-vector<GLfloat> histogramVertexData;
 
 int positionIterator = 0;
 char* fileDirectory = ("C:/Users/Marlon/Documents/PositionLogFile.txt");
@@ -213,86 +212,6 @@ GLuint createProgram(const std::vector<GLuint> &shaderList)
 }
 // end::createProgram[]
 
-void buildHistogram()
-{
-	histogramVertexData.clear();
-	int spread[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	float temp;
-	int range = powerVertexData.size();
-	float increment = 2.0f/range;
-	for (int i = 0; i < range; i++)
-	{
-		temp = powerVertexData[i];
-		
-		if (temp <= 300) { spread[0]++; }
-		else if (temp > 300 && temp <= 600) { spread[1]++; }
-		else if (temp > 600 && temp <= 900) { spread[2]++; }
-		else if (temp > 900 && temp <= 1200) { spread[3]++; }
-		else if (temp > 1200 && temp <= 1500) { spread[4]++; }
-		else if (temp > 1500 && temp <= 1800) { spread[5]++; }
-		else if (temp > 1800 && temp <= 2100) { spread[6]++; }
-		else if (temp > 2100 && temp <= 2400) { spread[7]++; }
-		else if (temp > 2400 && temp <= 2700) { spread[8]++; }
-		else if (temp > 2700 && temp <= 3000) { spread[9]++; }
-	}
-	float xpos = -1.0f;
-	for (int i = 0; i < 10; i++)
-	{
-		// point 1
-		histogramVertexData.push_back(xpos);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-		// point 2
-		histogramVertexData.push_back(xpos);
-		histogramVertexData.push_back(spread[i] * increment);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-		//point 3
-		histogramVertexData.push_back(xpos + 0.05f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-
-		//point 1
-		histogramVertexData.push_back(xpos);
-		histogramVertexData.push_back(spread[i] * increment);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-		//point 2
-		histogramVertexData.push_back(xpos + 0.05f);
-		histogramVertexData.push_back(spread[i] * increment);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-		//point 3
-		histogramVertexData.push_back(xpos + 0.05f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(0.0f);
-		histogramVertexData.push_back(1.0f);
-
-		cout << spread[i] << endl;
-		xpos += 0.1f;
-	}
-}
-
 // tag::initializeProgram[]
 void initializeProgram()
 {
@@ -334,15 +253,15 @@ void initializeProgram()
 // end::initializeProgram[]
 
 // tag::initializeVertexArrayObject[]
-void initializeVertexArrayObject()
+void initializeVertexArrayObject(int index)
 {
 	// setup a GL object (a VertexArrayObject) that stores how to access data and from where
-	glGenVertexArrays(1, &vertexArrayObject); //create a Vertex Array Object
-	cout << "Vertex Array Object created OK! GLUint is: " << vertexArrayObject << std::endl;
+	glGenVertexArrays(1, &DM.histograms[index].vertexObject); //create a Vertex Array Object
+	cout << "Vertex Array Object created OK! GLUint is: " << DM.histograms[index].vertexObject << std::endl;
 
-	glBindVertexArray(vertexArrayObject); //make the just created vertexArrayObject the active one
+	glBindVertexArray(DM.histograms[index].vertexObject); //make the just created vertexArrayObject the active one
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject); //bind vertexDataBufferObject
+	glBindBuffer(GL_ARRAY_BUFFER, DM.histograms[index].vertexBuffer); //bind vertexDataBufferObject
 
 	glEnableVertexAttribArray(positionLocation); //enable attribute at index positionLocation
 	glEnableVertexAttribArray(vertexColorLocation); //enable attribute at index vertexColorLocation
@@ -401,16 +320,16 @@ void makeMultipleVertexBuffers(vector<GLfloat> data, int num, int index)
 	initializeMultipleVertexArrayObject(num, index);
 }
 
-void remakeVertexBuffer(vector<GLfloat> data)
+void remakeVertexBuffer(vector<GLfloat> data, int index)
 {
-	glGenBuffers(1, &vertexDataBufferObject);
+	glGenBuffers(1, &DM.histograms[index].vertexBuffer);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertexDataBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, DM.histograms[index].vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat), &data.front(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
 
-	initializeVertexArrayObject();
+	initializeVertexArrayObject(index);
 }
 
 void initializeVertexBuffer()
@@ -422,7 +341,7 @@ void initializeVertexBuffer()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	cout << "vertexDataBufferObject created OK! GLUint is: " << vertexDataBufferObject << std::endl;
 
-	initializeVertexArrayObject();
+	initializeVertexArrayObject(5);
 }
 // end::initializeVertexBuffer[]
 
@@ -503,8 +422,10 @@ void handleInput()
 				}
 				break;
 			case 2: 
-				buildHistogram();
-				remakeVertexBuffer(histogramVertexData);
+				for (int i = 0; i < DM.histograms.size(); i++)
+				{
+					remakeVertexBuffer(DM.histograms[i].vertexData, i);
+				}
 				break;
 			}
 		}
@@ -547,7 +468,7 @@ void render()
 	switch (renderMode)
 	{
 	case 0:
-
+		break;
 
 	case 1:
 		glBindVertexArray(vertexArrayObject);
@@ -564,17 +485,21 @@ void render()
 		break;
 
 	case 2:
-		glBindVertexArray(vertexArrayObject);
+		for (int x = 0; x < DM.histograms.size(); x++)
+		{
+			glBindVertexArray(DM.histograms[x].vertexObject);
 
-		//set projectionMatrix - how we go from 3D to 2D
-		glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+			//set projectionMatrix - how we go from 3D to 2D
+			glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
 
-		//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-		glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+			//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+			glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
-		glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-		glDrawArrays(GL_TRIANGLES, 0, histogramVertexData.size() / 7);
+			glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+			glDrawArrays(GL_TRIANGLES, 0, DM.histograms[x].vertexData.size() / 7);
+		}
 		break;
+
 	case 3:
 		for (int x = 0; x < DM.heatmaps.size(); x++)
 		{

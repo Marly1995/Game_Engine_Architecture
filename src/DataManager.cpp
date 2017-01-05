@@ -24,7 +24,7 @@ int DataManager::loadFile(char* fileDirectory)
 		}
 		else if (line == "power ")
 		{
-			//loadPowerFile(fileDirectory);
+			loadPowerFile(fileDirectory);
 			file.close();
 			return 2;
 		}
@@ -36,41 +36,44 @@ int DataManager::loadFile(char* fileDirectory)
 	}
 }
 
-//void DataManager::loadPowerFile(char* fileDirectory)
-//{
-//	ifstream file;
-//	string line;
-//	string number;
-//	float x;
-//	powerVertexData.clear();
-//	if (fileDirectory != nullptr)
-//	{
-//		file.open(fileDirectory);
-//	}
-//	if (file.is_open())
-//	{
-//		SDL_Log("File opened!\n");
-//		int dataPosition = 0;
-//		while (getline(file, line))
-//		{
-//			if (line == "power ")
-//			{
-//			}
-//			else
-//			{
-//				number = line;
-//				x = stof(number);
-//				powerVertexData.push_back(x);
-//			}
-//		}
-//		SDL_Log("Should have finished writing!\n");
-//		file.close();
-//	}
-//	else
-//	{
-//		SDL_Log("File not opened correclty!!!\n");
-//	}
-//}
+void DataManager::loadPowerFile(char* fileDirectory)
+{
+	Histogram tempHistogram = Histogram();
+	ifstream file;
+	string line;
+	string number;
+	float x;
+	if (fileDirectory != nullptr)
+	{
+		file.open(fileDirectory);
+	}
+	if (file.is_open())
+	{
+		SDL_Log("File opened!\n");
+		int dataPosition = 0;
+		while (getline(file, line))
+		{
+			if (line == "power ")
+			{
+			}
+			else
+			{
+				number = line;
+				x = stof(number);
+				tempHistogram.vertexData.push_back(x);
+			}
+		}
+		SDL_Log("Should have finished writing!\n");
+		file.close();
+	}
+	else
+	{
+		SDL_Log("File not opened correclty!!!\n");
+	}
+	tempHistogram.BuildHistogram(histograms.size());
+	histograms.clear();
+	histograms.push_back(tempHistogram);
+}
 
 void DataManager::loadPositionFile(char* fileDirectory)
 {
