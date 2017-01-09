@@ -60,14 +60,18 @@ void Heatmap::BuildHeatmap()
 				for (int p = 0; p < 100; p++)
 				{
 					if (yTemp >= yIncrement * p && yTemp < yIncrement * (p + 1))
-					{
-						spread[z][p] += 0.05f;
+					{						
 						if (spread[z][p] >= 0.5f)
 						{
-							spread[z - 1][p] += 0.05f;
-							spread[z + 1][p] += 0.05f;
-							spread[z][p - 1] += 0.05f;
-							spread[z][p + 1] += 0.05f;
+							spread[z][p] += 0.01f;
+							spread[z - 1][p] += 0.02f;
+							spread[z + 1][p] += 0.02f;
+							spread[z][p - 1] += 0.02f;
+							spread[z][p + 1] += 0.02f;
+						}
+						else
+						{
+							spread[z][p] += 0.05f;
 						}
 					}
 				}
