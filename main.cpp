@@ -16,7 +16,7 @@ std::string frameLine = "";
 int renderMode = 0;
 
 DataManager DM = DataManager();
-
+// TODO: tidy declerations and program creation
 vector<glm::vec3> positionVectorData;
 vector<GLfloat> positionVertexData;
 vector<GLfloat> powerVertexData;
@@ -217,8 +217,8 @@ void initializeProgram()
 {
 	std::vector<GLuint> shaderList;
 
-	shaderList.push_back(createShader(GL_VERTEX_SHADER, loadShader("C:/Users/Marlon/Documents/GitHub/Game_Engine_Architecture/vertexShader.glsl")));
-	shaderList.push_back(createShader(GL_FRAGMENT_SHADER, loadShader("C:/Users/Marlon/Documents/GitHub/Game_Engine_Architecture/fragmentShader.glsl")));
+	shaderList.push_back(createShader(GL_VERTEX_SHADER, loadShader("C:/Users/Computing/Documents/GitHub/Game_Engine_Architecture/vertexShader.glsl")));
+	shaderList.push_back(createShader(GL_FRAGMENT_SHADER, loadShader("C:/Users/Computing/Documents/GitHub/Game_Engine_Architecture/fragmentShader.glsl")));
 
 	theProgram = createProgram(shaderList);
 	if (theProgram == 0)
@@ -251,6 +251,8 @@ void initializeProgram()
 	for_each(shaderList.begin(), shaderList.end(), glDeleteShader);
 }
 // end::initializeProgram[]
+
+// TODO: make these more objectified by passing in the objects and buffers.
 
 // tag::initializeVertexArrayObject[]
 void initializeHistogramVertexArrayObject(int index)
@@ -333,7 +335,7 @@ void initializeTrajectoryVertexArrayObject(int index)
 }
 
 // tag::initializeVertexBuffer[]
-
+// TODO: make these more uniform and create for more single objects for tags/ title etc
 void initializeHeatmapVertexBuffers(vector<GLfloat> data, int num, int index)
 {
 	glGenBuffers(1, &DM.heatmaps[num].vertexBuffer[index]);
@@ -371,6 +373,8 @@ void initializeTrajectoryVertexBuffer(vector<GLfloat> data,  int index)
 }
 // end::initializeVertexBuffer[]
 
+//TODO: redefine asset loading more appropriatley
+
 // tag::loadAssets[]
 void loadAssets()
 {
@@ -385,16 +389,6 @@ void loadAssets()
 // tag::handleInput[]
 void handleInput()
 {
-	//Event-based input handling
-	//The underlying OS is event-based, so **each** key-up or key-down (for example)
-	//generates an event.
-	//  - https://wiki.libsdl.org/SDL_PollEvent
-	//In some scenarios we want to catch **ALL** the events, not just to present state
-	//  - for instance, if taking keyboard input the user might key-down two keys during a frame
-	//    - we want to catch based, and know the order
-	//  - or the user might key-down and key-up the same within a frame, and we still want something to happen (e.g. jump)
-	//  - the alternative is to Poll the current state with SDL_GetKeyboardState
-
 	SDL_Event event; //somewhere to store an event
 
 					 //NOTE: there may be multiple events per frame
@@ -426,7 +420,7 @@ void handleInput()
 				case SDLK_3: renderMode = 3;
 				}
 			break;
-
+			// TODO: make functions for some of these
 		case SDL_DROPFILE:
 			fileDirectory = event.drop.file;
 			SDL_ShowSimpleMessageBox(
@@ -466,15 +460,8 @@ void handleInput()
 // tag::updateSimulation[]
 void updateSimulation(double simLength = 0.02) //update simulation with an amount of time to simulate for (in seconds)
 {
-	//WARNING - we should calculate an appropriate amount of time to simulate - not always use a constant amount of time
-	// see, for example, http://headerphile.blogspot.co.uk/2014/07/part-9-no-more-delays.html
-	/*if (positionIterator < positionData.size()) 
-	{
-		position1 = positionData[positionIterator];
-		cout << "  " << positionData[positionIterator].x << "  " << positionData[positionIterator].y << "  " << positionData[positionIterator].z << "\n";
-		positionIterator++;
-	}*/
-	//else { positionIterator = 0; }
+	// TODO: render at real time
+	
 }
 // end::updateSimulation[]
 
@@ -495,6 +482,7 @@ void render()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position1);
 
+	// TODO: make this more objectified and add option for render fro texture for heatmaps
 	switch (renderMode)
 	{
 	case 0:
@@ -592,6 +580,7 @@ int main(int argc, char* args[])
 	exeName = args[0];
 	//setup
 	//- do just once
+	// TODO: reconsider this ordering and efficiency testing
 
 	initialise();
 
