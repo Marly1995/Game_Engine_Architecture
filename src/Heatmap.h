@@ -12,10 +12,12 @@ public:
 	vector<GLuint> vertexBuffer;
 	vector<GLuint> vertexObject;
 	glm::vec3 color;
+	float spread[100][100] = { 0 };
 
 	Heatmap();
 
 	void BuildHeatmap();
+	void RebuildHeatmap(Heatmap heatmap);
 	void PickColor(int index);
 	
 };

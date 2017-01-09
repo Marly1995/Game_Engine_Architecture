@@ -47,6 +47,9 @@ std::string loadShader(const string filePath) {
 //our variables
 bool done = false;
 
+bool renderOverTime = false;
+float renderAmount = 0;
+
 glm::vec3 position1 = { 0.0f, 0.0f, 0.0f };
 
 GLuint theProgram; 
@@ -413,6 +416,9 @@ void handleInput()
 					//hit escape to exit
 				case SDLK_ESCAPE: done = true;
 					break;
+				case SDLK_t: renderOverTime = true;
+					renderAmount = 0.0f;
+					break;
 				case SDLK_1: renderMode = 1;
 					break;
 				case SDLK_2: renderMode = 2;
@@ -460,8 +466,7 @@ void handleInput()
 // tag::updateSimulation[]
 void updateSimulation(double simLength = 0.02) //update simulation with an amount of time to simulate for (in seconds)
 {
-	// TODO: render at real time
-	
+	renderAmount += 10.0f;
 }
 // end::updateSimulation[]
 
@@ -491,19 +496,46 @@ void render()
 	case 1:
 		if (DM.trajectories.size() > 0)
 		{
-			for (int x = 0; x < DM.trajectories.size(); x++)
+			if (renderOverTime == false)
 			{
-				glBindVertexArray(DM.trajectories[x].vertexObject);
+				for (int x = 0; x < DM.trajectories.size(); x++)
+				{
+					glBindVertexArray(DM.trajectories[x].vertexObject);
 
-				//set projectionMatrix - how we go from 3D to 2D
-				glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+					//set projectionMatrix - how we go from 3D to 2D
+					glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
 
-				//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-				glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+					//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+					glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
-				glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-				glLineWidth(5);
-				glDrawArrays(GL_LINE_STRIP, 0, DM.trajectories[x].vertexData.size() / 7);
+					glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+					glLineWidth(5);
+					glDrawArrays(GL_LINE_STRIP, 0, DM.trajectories[x].vertexData.size() / 7);
+				}
+			}
+			else
+			{
+				for (int x = 0; x < DM.trajectories.size(); x++)
+				{
+					glBindVertexArray(DM.trajectories[x].vertexObject);
+
+					//set projectionMatrix - how we go from 3D to 2D
+					glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+
+					//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+					glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+
+					glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+					glLineWidth(5);
+					if (renderAmount <= (DM.trajectories[x].vertexData.size() / 7))
+					{
+						glDrawArrays(GL_LINE_STRIP, 0, (renderAmount));
+					}	
+					else
+					{
+						glDrawArrays(GL_LINE_STRIP, 0, (DM.trajectories[x].vertexData.size() / 7));
+					}
+				}
 			}
 		}
 		break;
@@ -585,6 +617,7 @@ int main(int argc, char* args[])
 	initialise();
 
 	createWindow();
+
 
 	createContext();
 

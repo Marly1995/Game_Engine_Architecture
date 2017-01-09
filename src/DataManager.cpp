@@ -80,7 +80,7 @@ void DataManager::loadPositionFile(char* fileDirectory)
 	Heatmap tempHeatmap = Heatmap();
 	Trajectory tempTrajectory = Trajectory();
 	tempTrajectory.BuildTrajectory(trajectories.size());
-	tempHeatmap.PickColor(heatmaps.size());
+	tempHeatmap.PickColor(0);
 	ifstream file;
 	string line;
 	string number;
@@ -159,6 +159,13 @@ void DataManager::loadPositionFile(char* fileDirectory)
 	}
 	trajectories.push_back(tempTrajectory);
 
-	tempHeatmap.BuildHeatmap();
-	heatmaps.push_back(tempHeatmap);
+	if (heatmaps.size() < 1) 
+	{
+		tempHeatmap.BuildHeatmap();
+		heatmaps.push_back(tempHeatmap);
+	}
+	else
+	{
+		heatmaps[0].RebuildHeatmap(tempHeatmap);
+	}
 }
