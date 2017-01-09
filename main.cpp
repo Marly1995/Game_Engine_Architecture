@@ -22,7 +22,7 @@ vector<GLfloat> positionVertexData;
 vector<GLfloat> powerVertexData;
 
 int positionIterator = 0;
-char* fileDirectory = ("C:/Users/Marlon/Documents/PositionLogFile.txt");
+char* fileDirectory = "";
 // end::globalVariables[]
 
 // tag::loadShader[]
@@ -501,44 +501,11 @@ void render()
 		break;
 
 	case 1:
-		for (int x = 0; x < DM.trajectories.size(); x++)
+		if (DM.trajectories.size() > 0)
 		{
-			glBindVertexArray(DM.trajectories[x].vertexObject);
-
-			//set projectionMatrix - how we go from 3D to 2D
-			glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
-
-			//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-			glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
-
-			glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-			glLineWidth(5);
-			glDrawArrays(GL_LINE_STRIP, 0, DM.trajectories[x].vertexData.size() / 7);
-		}
-		break;
-
-	case 2:
-		for (int x = 0; x < DM.histograms.size(); x++)
-		{
-			glBindVertexArray(DM.histograms[x].vertexObject);
-
-			//set projectionMatrix - how we go from 3D to 2D
-			glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
-
-			//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-			glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
-
-			glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-			glDrawArrays(GL_TRIANGLES, 0, DM.histograms[x].vertexData.size() / 7);
-		}
-		break;
-
-	case 3:
-		for (int x = 0; x < DM.heatmaps.size(); x++)
-		{
-			for (int i = 0; i < 10; i++)
+			for (int x = 0; x < DM.trajectories.size(); x++)
 			{
-				glBindVertexArray(DM.heatmaps[x].vertexObject[i]);
+				glBindVertexArray(DM.trajectories[x].vertexObject);
 
 				//set projectionMatrix - how we go from 3D to 2D
 				glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
@@ -547,7 +514,49 @@ void render()
 				glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
 				glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-				glDrawArrays(GL_TRIANGLES, 0, DM.heatmaps[x].vertexData.size() / 70);
+				glLineWidth(5);
+				glDrawArrays(GL_LINE_STRIP, 0, DM.trajectories[x].vertexData.size() / 7);
+			}
+		}
+		break;
+
+	case 2:
+		if (DM.histograms.size() > 0)
+		{
+			for (int x = 0; x < DM.histograms.size(); x++)
+			{
+				glBindVertexArray(DM.histograms[x].vertexObject);
+
+				//set projectionMatrix - how we go from 3D to 2D
+				glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+
+				//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+				glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+
+				glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+				glDrawArrays(GL_TRIANGLES, 0, DM.histograms[x].vertexData.size() / 7);
+			}
+		}
+		break;
+
+	case 3:
+		if (DM.heatmaps.size() > 0)
+		{
+			for (int x = 0; x < DM.heatmaps.size(); x++)
+			{
+				for (int i = 0; i < 10; i++)
+				{
+					glBindVertexArray(DM.heatmaps[x].vertexObject[i]);
+
+					//set projectionMatrix - how we go from 3D to 2D
+					glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+
+					//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+					glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+
+					glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+					glDrawArrays(GL_TRIANGLES, 0, DM.heatmaps[x].vertexData.size() / 70);
+				}
 			}
 		}
 		break;
