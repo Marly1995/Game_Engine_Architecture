@@ -24,9 +24,22 @@ void Heatmap::PickColor(int index)
 	}
 }
 
+float Heatmap::colPick(float index, int col)
+{
+	glm::vec3 color = glm::vec3(0.0f, 0.0f, 1.0f);
+	if (index >= 0.05f && index <= 1.0f){ color = glm::vec3(0.0f, 1.0f * index, 1.0f); }
+	else if (index > 1.0f && index <= 2.0f){ color = glm::vec3(0.0f, 1.0f, 1.0f * (2-index)); }
+	else if (index > 2.0f && index <= 3.0f){ color = glm::vec3(1.0f, 1.0f * (3 - index), 0.0f); }
+	else if (index > 3.0f) { color = glm::vec3(1.0f * (0.5f * (index - 3.0f)), 0.0f, 0.0f); }
+
+	if (col == 1){ return color.x; }	
+	if (col == 2) { return color.y; }
+	if (col == 3) { return color.z; }
+}
 
 void Heatmap::BuildHeatmap()
 {
+
 	int range = vertexData.size() / 7;
 
 	float xMin = 0, yMin = 0, xMax = 0, yMax = 0;
@@ -60,18 +73,15 @@ void Heatmap::BuildHeatmap()
 				for (int p = 0; p < 100; p++)
 				{
 					if (yTemp >= yIncrement * p && yTemp < yIncrement * (p + 1))
-					{						
+					{		
+						spread[z][p] += 0.1f;
+						if (spread[z][p] > 4.0f) { spread[z][p] = 4.0f; }
 						if (spread[z][p] >= 0.5f)
 						{
-							spread[z][p] += 0.01f;
-							spread[z - 1][p] += 0.02f;
-							spread[z + 1][p] += 0.02f;
-							spread[z][p - 1] += 0.02f;
-							spread[z][p + 1] += 0.02f;
-						}
-						else
-						{
-							spread[z][p] += 0.05f;
+							spread[z - 1][p] += 0.05f;
+							spread[z + 1][p] += 0.05f;
+							spread[z][p - 1] += 0.05f;
+							spread[z][p + 1] += 0.05f;
 						}
 					}
 				}
@@ -88,51 +98,51 @@ void Heatmap::BuildHeatmap()
 			vertexData.push_back(-1.0f + (x*0.02f));
 			vertexData.push_back(-1.0f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 			// point 2
 			vertexData.push_back(-1.0f + (x*0.02f));
 			vertexData.push_back(-0.98f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 			//point 3
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-1.0f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 
 			//point 1
 			vertexData.push_back(-1.0f + (x*0.02f));
 			vertexData.push_back(-0.98f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 			//point 2
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-0.98f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 			//point 3
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-1.0f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 		}
 	}
 
@@ -179,7 +189,7 @@ void Heatmap::RebuildHeatmap(Heatmap heatmap)
 				{
 					if (yTemp >= yIncrement * p && yTemp < yIncrement * (p + 1))
 					{
-						spread[z][p] += 0.05f;
+						spread[z][p] += 0.1f;
 						if (spread[z][p] >= 0.5f)
 						{
 							spread[z - 1][p] += 0.05f;
@@ -202,51 +212,51 @@ void Heatmap::RebuildHeatmap(Heatmap heatmap)
 			vertexData.push_back(-1.0f + (x*0.02f));
 			vertexData.push_back(-1.0f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 			// point 2
 			vertexData.push_back(-1.0f + (x*0.02f));
 			vertexData.push_back(-0.98f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 			//point 3
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-1.0f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 
 			//point 1
 			vertexData.push_back(-1.0f + (x*0.02f));
 			vertexData.push_back(-0.98f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 			//point 2
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-0.98f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 			//point 3
 			vertexData.push_back(-0.98f + (x*0.02f));
 			vertexData.push_back(-1.0f + (y*0.02f));
 			vertexData.push_back(0.0f);
-			vertexData.push_back(color.x);
-			vertexData.push_back(color.y);
-			vertexData.push_back(color.z);
-			vertexData.push_back(spread[x][y]);
+			vertexData.push_back(colPick(spread[x][y], 1));
+			vertexData.push_back(colPick(spread[x][y], 2));
+			vertexData.push_back(colPick(spread[x][y], 3));
+			vertexData.push_back(1.0f);
 		}
 	}
 }

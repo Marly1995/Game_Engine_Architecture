@@ -19,5 +19,5 @@ public:
 	void BuildHeatmap();
 	void RebuildHeatmap(Heatmap heatmap);
 	void PickColor(int index);
-	
+	float colPick(float index, int col);
 };
