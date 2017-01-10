@@ -9,6 +9,9 @@ void Heatmap::PickColor(int index)
 {
 	switch (index)
 	{
+	case -1:
+		color = glm::vec3(0.8f, 0.6f, 0.2f);
+		break;
 	case 0:
 		color = glm::vec3(1.0f, 0.0f, 0.0f);
 		break;
@@ -25,33 +28,20 @@ void Heatmap::PickColor(int index)
 }
 
 
-void Heatmap::BuildHeatmap()
+void Heatmap::BuildHeatmap(float heat)
 {
 	int range = vertexData.size() / 7;
 
-	float xMin = 0, yMin = 0, xMax = 0, yMax = 0;
-
-	for (int i = 0; i < range; i++)
-	{
-		float xTemp = vectorData[i].x;
-		float yTemp = vectorData[i].y;
-
-		if (xTemp > xMax) { xMax = xTemp; }
-		if (xTemp < xMin) { xMin = xTemp; }
-		if (yTemp > yMax) { yMax = yTemp; }
-		if (yTemp < yMin) { yMin = yTemp; }
-	}
-
-	float xRange = xMax - xMin;
-	float yRange = yMax - yMin;
+	float xRange = 4000.0f;
+	float yRange = 3400.0f;
 
 	float xIncrement = xRange / 100;
 	float yIncrement = yRange / 100;
 
 	for (int i = 0; i < range; i++)
 	{
-		float xTemp = vectorData[i].x;
-		float yTemp = vectorData[i].y;
+		float xTemp = vectorData[i].x + 2000.0f;
+		float yTemp = vectorData[i].y + 1700.0f;
 
 		for (int z = 0; z < 100; z++)
 		{
@@ -61,17 +51,13 @@ void Heatmap::BuildHeatmap()
 				{
 					if (yTemp >= yIncrement * p && yTemp < yIncrement * (p + 1))
 					{						
+						spread[z][p] += heat;
 						if (spread[z][p] >= 0.5f)
 						{
-							spread[z][p] += 0.01f;
-							spread[z - 1][p] += 0.02f;
-							spread[z + 1][p] += 0.02f;
-							spread[z][p - 1] += 0.02f;
-							spread[z][p + 1] += 0.02f;
-						}
-						else
-						{
-							spread[z][p] += 0.05f;
+							spread[z - 1][p] += 0.05f;
+							spread[z + 1][p] += 0.05f;
+							spread[z][p - 1] += 0.05f;
+							spread[z][p + 1] += 0.05f;
 						}
 					}
 				}
@@ -147,29 +133,16 @@ void Heatmap::RebuildHeatmap(Heatmap heatmap)
 {
 	int range = heatmap.vertexData.size() / 7;
 
-	float xMin = 0, yMin = 0, xMax = 0, yMax = 0;
-
-	for (int i = 0; i < range; i++)
-	{
-		float xTemp = heatmap.vectorData[i].x;
-		float yTemp = heatmap.vectorData[i].y;
-
-		if (xTemp > xMax) { xMax = xTemp; }
-		if (xTemp < xMin) { xMin = xTemp; }
-		if (yTemp > yMax) { yMax = yTemp; }
-		if (yTemp < yMin) { yMin = yTemp; }
-	}
-
-	float xRange = xMax - xMin;
-	float yRange = yMax - yMin;
+	float xRange = 4000.0f;
+	float yRange = 3400.0f;
 
 	float xIncrement = xRange / 100;
 	float yIncrement = yRange / 100;
 
 	for (int i = 0; i < range; i++)
 	{
-		float xTemp = heatmap.vectorData[i].x;
-		float yTemp = heatmap.vectorData[i].y;
+		float xTemp = heatmap.vectorData[i].x + 2000.0f;
+		float yTemp = heatmap.vectorData[i].y + 1700.0f;
 
 		for (int z = 0; z < 100; z++)
 		{

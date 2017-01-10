@@ -28,6 +28,18 @@ int DataManager::loadFile(char* fileDirectory)
 			file.close();
 			return 2;
 		}
+		else if (line == "batteries ")
+		{
+			loadBatteryFile(fileDirectory);
+			file.close();
+			return 1;
+		}
+		else
+		{
+			// run load victory or defeat 
+			file.close();
+			return 4;
+		}
 	}
 	else
 	{
@@ -80,7 +92,7 @@ void DataManager::loadPositionFile(char* fileDirectory)
 	Heatmap tempHeatmap = Heatmap();
 	Trajectory tempTrajectory = Trajectory();
 	tempTrajectory.BuildTrajectory(trajectories.size());
-	tempHeatmap.PickColor(0);
+	tempHeatmap.PickColor(heatmaps.size());
 	ifstream file;
 	string line;
 	string number;
@@ -131,11 +143,11 @@ void DataManager::loadPositionFile(char* fileDirectory)
 						number = "";
 					}
 				}
-				tempHeatmap.vectorData.push_back(glm::vec3(x + 3000, y + 3000, z));
+				tempHeatmap.vectorData.push_back(glm::vec3(x, y, z));
 
-				tempHeatmap.vertexData.push_back(x / 3000.0f);
-				tempHeatmap.vertexData.push_back(y / 3000.0f);
-				tempHeatmap.vertexData.push_back(z / 3000.0f);
+				tempHeatmap.vertexData.push_back(x);
+				tempHeatmap.vertexData.push_back(y);
+				tempHeatmap.vertexData.push_back(z);
 				tempHeatmap.vertexData.push_back(tempHeatmap.color.x);
 				tempHeatmap.vertexData.push_back(tempHeatmap.color.y);
 				tempHeatmap.vertexData.push_back(tempHeatmap.color.z);
@@ -158,14 +170,97 @@ void DataManager::loadPositionFile(char* fileDirectory)
 		SDL_Log("File not opened correclty!!!\n");
 	}
 	trajectories.push_back(tempTrajectory);
-
-	if (heatmaps.size() < 1) 
+	int newheat = 0;
+	cout << "Do you wish to create a new heatmap?" << endl;
+	cout << "Enter 1 for YES and 2 for NO" << endl;
+	cin >> newheat;
+	if (newheat == 1)
 	{
-		tempHeatmap.BuildHeatmap();
+		tempHeatmap.BuildHeatmap(0.05f);
 		heatmaps.push_back(tempHeatmap);
+	}
+	if (newheat == 2)
+	{
+		int numheat = 0;
+		cout << "What number heatmap do you wish to add it to?" << endl;
+		cin >> numheat;
+		heatmaps[numheat].RebuildHeatmap(tempHeatmap);
+	}
+}
+
+void DataManager::loadBatteryFile(char* fileDirectory)
+{
+	Heatmap tempHeatmap = Heatmap();
+	tempHeatmap.PickColor(-1);
+	ifstream file;
+	string line;
+	string number;
+	if (fileDirectory != nullptr)
+	{
+		file.open(fileDirectory);
+	}
+	if (file.is_open())
+	{
+		SDL_Log("File opened!\n");
+		int dataPosition = 0;
+		while (getline(file, line))
+		{
+			int i;
+			int k = 0;
+			float x, y, z;
+			x = 0;
+			y = 0;
+			z = 0;
+			if (line == "batteries ")
+			{
+			}
+			else
+			{
+				for (i = 4; i < line.size(); i++)
+				{
+					if (line[i] != ',' && line[i] != ')')
+					{
+						number += line[i];
+					}
+					else if (line[i] == ',' && k == 0)
+					{
+						x = stof(number);
+						k++;
+						i += 3;
+						number = "";
+					}
+					else if ((line[i] == ',' && k == 1) || (line[i] == ')' && k == 1))
+					{
+						y = stof(number);
+						k++;
+						i += 3;
+						number = "";
+					}
+					else if (line[i] == ')' && k == 2)
+					{
+						z = stof(number);
+						number = "";
+					}
+				}
+				tempHeatmap.vectorData.push_back(glm::vec3(x, y, z));
+
+				tempHeatmap.vertexData.push_back(x);
+				tempHeatmap.vertexData.push_back(y);
+				tempHeatmap.vertexData.push_back(z);
+				tempHeatmap.vertexData.push_back(tempHeatmap.color.x);
+				tempHeatmap.vertexData.push_back(tempHeatmap.color.y);
+				tempHeatmap.vertexData.push_back(tempHeatmap.color.z);
+				tempHeatmap.vertexData.push_back(1.0f);
+
+			}
+		}
+		SDL_Log("Should have finished writing!\n");
+		file.close();
 	}
 	else
 	{
-		heatmaps[0].RebuildHeatmap(tempHeatmap);
+		SDL_Log("File not opened correclty!!!\n");
 	}
+		tempHeatmap.BuildHeatmap(0.5f);
+		heatmaps.push_back(tempHeatmap);
 }

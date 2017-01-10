@@ -16,7 +16,7 @@ public:
 
 	Heatmap();
 
-	void BuildHeatmap();
+	void BuildHeatmap(float heat);
 	void RebuildHeatmap(Heatmap heatmap);
 	void PickColor(int index);
 	
