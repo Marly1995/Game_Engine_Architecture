@@ -18,4 +18,5 @@ public:
 	void loadPowerFile(char* fileDirectory);
 	void loadPositionFile(char* fileDirectory);
 	void loadBatteryFile(char* fileDirectory);
+	void loadStateFile(char* fileDirectory);
 };

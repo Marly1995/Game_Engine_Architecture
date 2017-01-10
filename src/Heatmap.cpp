@@ -2,13 +2,23 @@
 
 Heatmap::Heatmap()
 {
-
+	for (int i = 0; i < 10; i++)
+	{
+		vertexBuffer.push_back(i);
+		vertexObject.push_back(i);
+	}
 }
 
 void Heatmap::PickColor(int index)
 {
 	switch (index)
 	{
+	case -3:
+		color = glm::vec3(0.0f, 0.0f, 1.0f);
+		break;
+	case -2:
+		color = glm::vec3(0.0f, 1.0f, 0.0f);
+		break;
 	case -1:
 		color = glm::vec3(0.8f, 0.6f, 0.2f);
 		break;
@@ -30,6 +40,7 @@ void Heatmap::PickColor(int index)
 
 void Heatmap::BuildHeatmap(float heat)
 {
+	ready = true;
 	int range = vertexData.size() / 7;
 
 	float xRange = 4000.0f;
@@ -54,10 +65,20 @@ void Heatmap::BuildHeatmap(float heat)
 						spread[z][p] += heat;
 						if (spread[z][p] >= 0.5f)
 						{
-							spread[z - 1][p] += 0.05f;
-							spread[z + 1][p] += 0.05f;
-							spread[z][p - 1] += 0.05f;
-							spread[z][p + 1] += 0.05f;
+							spread[z - 1][p] += heat/2;
+							spread[z + 1][p] += heat/2;
+							spread[z][p - 1] += heat/2;
+							spread[z][p + 1] += heat/2;
+
+							spread[z - 2][p] += heat / 4;
+							spread[z + 2][p] += heat / 4;
+							spread[z][p - 2] += heat / 4;
+							spread[z][p + 2] += heat / 4;
+
+							spread[z - 1][p + 1] += heat / 4;
+							spread[z + 1][p - 1] += heat / 4;
+							spread[z - 1][p - 1] += heat / 4;
+							spread[z + 1][p + 1] += heat / 4;
 						}
 					}
 				}
@@ -121,16 +142,11 @@ void Heatmap::BuildHeatmap(float heat)
 			vertexData.push_back(spread[x][y]);
 		}
 	}
-
-	for (int i = 0; i < 10; i++)
-	{
-		vertexBuffer.push_back(i);
-		vertexObject.push_back(i);
-	}
 }
 
-void Heatmap::RebuildHeatmap(Heatmap heatmap)
+void Heatmap::RebuildHeatmap(Heatmap heatmap, float heat)
 {
+	ready = true;
 	int range = heatmap.vertexData.size() / 7;
 
 	float xRange = 4000.0f;
@@ -152,13 +168,23 @@ void Heatmap::RebuildHeatmap(Heatmap heatmap)
 				{
 					if (yTemp >= yIncrement * p && yTemp < yIncrement * (p + 1))
 					{
-						spread[z][p] += 0.05f;
+						spread[z][p] += heat;
 						if (spread[z][p] >= 0.5f)
 						{
-							spread[z - 1][p] += 0.05f;
-							spread[z + 1][p] += 0.05f;
-							spread[z][p - 1] += 0.05f;
-							spread[z][p + 1] += 0.05f;
+							spread[z - 1][p] += heat/2;
+							spread[z + 1][p] += heat/2;
+							spread[z][p - 1] += heat/2;
+							spread[z][p + 1] += heat/2;
+
+							spread[z - 2][p] += heat / 4;
+							spread[z + 2][p] += heat / 4;
+							spread[z][p - 2] += heat / 4;
+							spread[z][p + 2] += heat / 4;
+
+							spread[z - 1][p + 1] += heat / 4;
+							spread[z + 1][p - 1] += heat / 4;
+							spread[z - 1][p - 1] += heat / 4;
+							spread[z + 1][p + 1] += heat / 4;
 						}
 					}
 				}

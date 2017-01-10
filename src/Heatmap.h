@@ -13,11 +13,12 @@ public:
 	vector<GLuint> vertexObject;
 	glm::vec3 color;
 	float spread[100][100] = { 0 };
+	bool ready = false;
 
 	Heatmap();
 
 	void BuildHeatmap(float heat);
-	void RebuildHeatmap(Heatmap heatmap);
+	void RebuildHeatmap(Heatmap heatmap, float heat);
 	void PickColor(int index);
 	
 };

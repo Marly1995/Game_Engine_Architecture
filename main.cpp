@@ -89,7 +89,7 @@ void createWindow()
 	const char *exeNameCStr = exeNameEnd.c_str();
 
 	//create window
-	win = SDL_CreateWindow(exeNameCStr, 100, 100, 600, 600, SDL_WINDOW_OPENGL); //same height and width makes the window square ...
+	win = SDL_CreateWindow(exeNameCStr, 100, 100, 1000, 1000, SDL_WINDOW_OPENGL); //same height and width makes the window square ...
 
 																				//error handling
 	if (win == nullptr)
@@ -429,12 +429,12 @@ void handleInput()
 			// TODO: make functions for some of these
 		case SDL_DROPFILE:
 			fileDirectory = event.drop.file;
-			SDL_ShowSimpleMessageBox(
+			/*SDL_ShowSimpleMessageBox(
 				SDL_MESSAGEBOX_INFORMATION,
 				"File Dropped on Window",
 				fileDirectory,
 				win
-			);
+			);*/
 			int type = DM.loadFile(fileDirectory);
 			switch (type) 
 			{
@@ -445,9 +445,12 @@ void handleInput()
 				}
 				for (int i = 0; i < DM.heatmaps.size(); i++)
 				{
-					for (int x = 0; x < DM.heatmaps[i].vertexBuffer.size(); x++)
+					if (DM.heatmaps[i].ready == true)
 					{
-						initializeHeatmapVertexBuffers(DM.heatmaps[i].vertexData, i, x);
+						for (int x = 0; x < DM.heatmaps[i].vertexBuffer.size(); x++)
+						{
+							initializeHeatmapVertexBuffers(DM.heatmaps[i].vertexData, i, x);
+						}
 					}
 				}
 				break;
@@ -473,7 +476,7 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 // tag::preRender[]
 void preRender()
 {
-	glViewport(0, 0, 600, 600); //set viewpoint
+	glViewport(0, 0, 1000, 1000); //set viewpoint
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); //set clear colour
 	glClear(GL_COLOR_BUFFER_BIT); //clear the window (technical the scissor box bounds)
 }
@@ -564,18 +567,21 @@ void render()
 		{
 			for (int x = 0; x < DM.heatmaps.size(); x++)
 			{
-				for (int i = 0; i < 10; i++)
+				if (DM.heatmaps[x].ready == true)
 				{
-					glBindVertexArray(DM.heatmaps[x].vertexObject[i]);
+					for (int i = 0; i < 10; i++)
+					{
+						glBindVertexArray(DM.heatmaps[x].vertexObject[i]);
 
-					//set projectionMatrix - how we go from 3D to 2D
-					glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+						//set projectionMatrix - how we go from 3D to 2D
+						glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
 
-					//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-					glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+						//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+						glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
-					glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-					glDrawArrays(GL_TRIANGLES, 0, DM.heatmaps[x].vertexData.size() / 70);
+						glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+						glDrawArrays(GL_TRIANGLES, 0, DM.heatmaps[x].vertexData.size() / 70);
+					}
 				}
 			}
 		}
@@ -623,7 +629,7 @@ int main(int argc, char* args[])
 
 	initGlew();
 
-	glViewport(0, 0, 600, 600); //should check what the actual window res is?
+	glViewport(0, 0, 1000, 1000); //should check what the actual window res is?
 
 	
 
