@@ -344,7 +344,7 @@ void initializeHeatmapVertexBuffers(vector<GLfloat> data, int num, int index)
 	glGenBuffers(1, &DM.heatmaps[num].vertexBuffer[index]);
 
 	glBindBuffer(GL_ARRAY_BUFFER, DM.heatmaps[num].vertexBuffer[index]);
-	glBufferData(GL_ARRAY_BUFFER, (data.size() * sizeof(GLfloat))/ 10, &data.at(index * 42000), GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, (data.size() * sizeof(GLfloat))/ 1000, &data.at(index * 42000), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	cout << "vertexDataBufferObject created OK! GLUint is: " << DM.heatmaps[num].vertexBuffer[index] << std::endl;
 
@@ -569,7 +569,7 @@ void render()
 			{
 				if (DM.heatmaps[x].ready == true)
 				{
-					for (int i = 0; i < 10; i++)
+					for (int i = 0; i < 1000; i++)
 					{
 						glBindVertexArray(DM.heatmaps[x].vertexObject[i]);
 
@@ -580,7 +580,7 @@ void render()
 						glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
 						glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-						glDrawArrays(GL_TRIANGLES, 0, DM.heatmaps[x].vertexData.size() / 70);
+						glDrawArrays(GL_TRIANGLES, 0, DM.heatmaps[x].vertexData.size() / 700);
 					}
 				}
 			}

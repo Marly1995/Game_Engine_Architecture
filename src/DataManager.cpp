@@ -175,7 +175,7 @@ void DataManager::loadPositionFile(char* fileDirectory)
 		Heatmap heat = Heatmap();
 		Heatmap heat1 = Heatmap();
 		Heatmap heat2 = Heatmap();
-		tempHeatmap.BuildHeatmap(0.05f);
+		tempHeatmap.BuildHeatmap(1.0f);
 		heatmaps.push_back(tempHeatmap);
 		heatmaps.push_back(heat);
 		heatmaps.push_back(heat1);
@@ -184,7 +184,7 @@ void DataManager::loadPositionFile(char* fileDirectory)
 	else
 	{
 		heatmaps[0].PickColor(0);
-		heatmaps[0].RebuildHeatmap(tempHeatmap, 0.05f);
+		heatmaps[0].RebuildHeatmap(tempHeatmap, 1.0f);
 	}
 	/*int newheat = 0;
 	cout << "Do you wish to create a new heatmap?" << endl;

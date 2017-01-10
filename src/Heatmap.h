@@ -12,7 +12,8 @@ public:
 	vector<GLuint> vertexBuffer;
 	vector<GLuint> vertexObject;
 	glm::vec3 color;
-	float spread[100][100] = { 0 };
+	//float spread[1000][1000] = { 0 };
+	vector<vector<float>> spread;
 	bool ready = false;
 
 	Heatmap();
