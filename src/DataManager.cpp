@@ -378,7 +378,7 @@ void DataManager::loadStateFile(char* fileDirectory)
 			Heatmap heat = Heatmap();
 			Heatmap heat1 = Heatmap();
 			Heatmap heat2 = Heatmap();
-			tempHeatmap.BuildHeatmap(0.5f);
+			tempHeatmap.BuildHeatmap(1.0f);
 			heatmaps.push_back(heat);
 			heatmaps.push_back(heat1);
 			heatmaps.push_back(tempHeatmap);
@@ -387,7 +387,7 @@ void DataManager::loadStateFile(char* fileDirectory)
 		else
 		{
 			heatmaps[2].PickColor(-2);
-			heatmaps[2].RebuildHeatmap(tempHeatmap, 0.5f);
+			heatmaps[2].RebuildHeatmap(tempHeatmap, 1.0f);
 		}
 	}
 	if (winloss == 2) 
@@ -398,7 +398,7 @@ void DataManager::loadStateFile(char* fileDirectory)
 			Heatmap heat = Heatmap();
 			Heatmap heat1 = Heatmap();
 			Heatmap heat2 = Heatmap();
-			tempHeatmap.BuildHeatmap(0.5f);
+			tempHeatmap.BuildHeatmap(1.0f);
 			heatmaps.push_back(heat);
 			heatmaps.push_back(heat1);
 			heatmaps.push_back(heat2);
@@ -407,7 +407,7 @@ void DataManager::loadStateFile(char* fileDirectory)
 		else
 		{
 			heatmaps[3].PickColor(-3);
-			heatmaps[3].RebuildHeatmap(tempHeatmap, 0.5f);
+			heatmaps[3].RebuildHeatmap(tempHeatmap, 1.0f);
 		}
 	}
 }

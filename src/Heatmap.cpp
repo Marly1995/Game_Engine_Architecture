@@ -61,10 +61,51 @@ void Heatmap::BuildHeatmap(float heat)
 				for (int p = 0; p < 100; p++)
 				{
 					if (yTemp >= yIncrement * p && yTemp < yIncrement * (p + 1))
-					{						
-						spread[z][p] += heat;
+					{		
+						if (spread[z][p] <= 0.25)
+						{
+							spread[z][p] += heat;
+						}
+
 						if (spread[z][p] >= 0.5f)
 						{
+							spread[z][p] += heat / 2;
+
+							spread[z - 1][p] += heat / 2;
+							spread[z + 1][p] += heat / 2;
+							spread[z][p - 1] += heat / 2;
+							spread[z][p + 1] += heat / 2;
+							
+							//
+							spread[z - 2][p] += heat / 6;
+							spread[z + 2][p] += heat / 6;
+							spread[z][p - 2] += heat / 6;
+							spread[z][p + 2] += heat / 6;
+
+							spread[z - 1][p + 1] += heat / 6;
+							spread[z + 1][p - 1] += heat / 6;
+							spread[z - 1][p - 1] += heat / 6;
+							spread[z + 1][p + 1] += heat / 6;
+
+							//
+							spread[z - 3][p] += heat / 10;
+							spread[z + 3][p] += heat / 10;
+							spread[z][p - 3] += heat / 10;
+							spread[z][p + 3] += heat / 10;
+
+							spread[z - 2][p + 1] += heat / 10;
+							spread[z - 1][p + 2] += heat / 10;
+							spread[z + 2][p + 1] += heat / 10;
+							spread[z + 1][p + 2] += heat / 10;
+							spread[z - 2][p - 1] += heat / 10;
+							spread[z - 1][p - 2] += heat / 10;
+							spread[z + 2][p - 1] += heat / 10;
+							spread[z + 1][p - 2] += heat / 10;
+						}
+						else if (spread[z][p] >= 0.25f)
+						{
+							spread[z][p] += heat;
+
 							spread[z - 1][p] += heat/2;
 							spread[z + 1][p] += heat/2;
 							spread[z][p - 1] += heat/2;
@@ -168,13 +209,54 @@ void Heatmap::RebuildHeatmap(Heatmap heatmap, float heat)
 				{
 					if (yTemp >= yIncrement * p && yTemp < yIncrement * (p + 1))
 					{
-						spread[z][p] += heat;
+						if (spread[z][p] <= 0.25)
+						{ 
+							spread[z][p] += heat;
+						}
+
 						if (spread[z][p] >= 0.5f)
 						{
-							spread[z - 1][p] += heat/2;
-							spread[z + 1][p] += heat/2;
-							spread[z][p - 1] += heat/2;
-							spread[z][p + 1] += heat/2;
+							spread[z][p] += heat / 4;
+
+							spread[z - 1][p] += heat / 6;
+							spread[z + 1][p] += heat / 6;
+							spread[z][p - 1] += heat / 6;
+							spread[z][p + 1] += heat / 6;
+
+							//
+							spread[z - 2][p] += heat / 8;
+							spread[z + 2][p] += heat / 8;
+							spread[z][p - 2] += heat / 8;
+							spread[z][p + 2] += heat / 8;
+
+							spread[z - 1][p + 1] += heat / 8;
+							spread[z + 1][p - 1] += heat / 8;
+							spread[z - 1][p - 1] += heat / 8;
+							spread[z + 1][p + 1] += heat / 8;
+
+							//
+							spread[z - 3][p] += heat / 10;
+							spread[z + 3][p] += heat / 10;
+							spread[z][p - 3] += heat / 10;
+							spread[z][p + 3] += heat / 10;
+
+							spread[z - 2][p + 1] += heat / 10;
+							spread[z - 1][p + 2] += heat / 10;
+							spread[z + 2][p + 1] += heat / 10;
+							spread[z + 1][p + 2] += heat / 10;
+							spread[z - 2][p - 1] += heat / 10;
+							spread[z - 1][p - 2] += heat / 10;
+							spread[z + 2][p - 1] += heat / 10;
+							spread[z + 1][p - 2] += heat / 10;
+						}
+						else if (spread[z][p] >= 0.25f)
+						{
+							spread[z][p] += heat;
+
+							spread[z - 1][p] += heat / 2;
+							spread[z + 1][p] += heat / 2;
+							spread[z][p - 1] += heat / 2;
+							spread[z][p + 1] += heat / 2;
 
 							spread[z - 2][p] += heat / 4;
 							spread[z + 2][p] += heat / 4;
