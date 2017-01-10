@@ -419,6 +419,17 @@ void handleInput()
 				case SDLK_t: renderOverTime = true;
 					renderAmount = 0.0f;
 					break;
+				case SDLK_o: for (int i = 0; i < DM.heatmaps.size(); i++)
+				{
+					if (DM.heatmaps[i].ready == true)
+					{
+						for (int x = 0; x < DM.heatmaps[i].vertexBuffer.size(); x++)
+						{
+							initializeHeatmapVertexBuffers(DM.heatmaps[i].vertexData, i, x);
+						}
+					}
+				}
+							 break;
 				case SDLK_1: renderMode = 1;
 					break;
 				case SDLK_2: renderMode = 2;
@@ -442,16 +453,6 @@ void handleInput()
 				for (int p = 0; p < DM.trajectories.size(); p++)
 				{
 					initializeTrajectoryVertexBuffer(DM.trajectories[p].vertexData, p);
-				}
-				for (int i = 0; i < DM.heatmaps.size(); i++)
-				{
-					if (DM.heatmaps[i].ready == true)
-					{
-						for (int x = 0; x < DM.heatmaps[i].vertexBuffer.size(); x++)
-						{
-							initializeHeatmapVertexBuffers(DM.heatmaps[i].vertexData, i, x);
-						}
-					}
 				}
 				break;
 			case 2: 
@@ -580,7 +581,7 @@ void render()
 						glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
 						glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-						glDrawArrays(GL_TRIANGLES, 0, DM.heatmaps[x].vertexData.size() / 700);
+						glDrawArrays(GL_TRIANGLES, 0, DM.heatmaps[x].vertexData.size() / 7000);
 					}
 				}
 			}
