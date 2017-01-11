@@ -473,7 +473,7 @@ void handleInput()
 // tag::updateSimulation[]
 void updateSimulation(double simLength = 0.02) //update simulation with an amount of time to simulate for (in seconds)
 {
-	if (renderAmount <= 65000.0f)
+	if (renderAmount <= 420000.0f)
 	{
 		renderAmount += 10.0f;
 	}
