@@ -9,6 +9,7 @@ class Trajectory
 public:
 
 	vector<GLfloat> vertexData;
+	vector<GLfloat> powerData;
 	GLuint vertexBuffer;
 	GLuint vertexObject;
 	glm::vec3 color;
@@ -16,5 +17,6 @@ public:
 	Trajectory();
 
 	void BuildTrajectory(int index);
+	void AddPower();
 
 };

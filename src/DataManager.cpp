@@ -82,6 +82,18 @@ void DataManager::loadPowerFile(char* fileDirectory)
 	{
 		SDL_Log("File not opened correclty!!!\n");
 	}
+	int newheat = 0;
+	cout << "Would you like to apply the power log to a trajectory?" << endl;
+	cout << "Enter 1 for YES and 2 for NO" << endl;
+	cin >> newheat;
+	if (newheat == 1)
+	{
+		int numheat = 0;
+		cout << "What number trajectory do you wish to add it to?" << endl;
+		cin >> numheat;
+		trajectories[numheat].powerData = tempHistogram.vertexData;
+		trajectories[numheat].AddPower();
+	}
 	tempHistogram.BuildHistogram(histograms.size());
 	histograms.clear();
 	histograms.push_back(tempHistogram);
@@ -91,7 +103,6 @@ void DataManager::loadPositionFile(char* fileDirectory)
 {
 	Heatmap tempHeatmap = Heatmap();
 	Trajectory tempTrajectory = Trajectory();
-	tempTrajectory.BuildTrajectory(trajectories.size());
 	tempHeatmap.PickColor(0);
 	ifstream file;
 	string line;
@@ -160,6 +171,8 @@ void DataManager::loadPositionFile(char* fileDirectory)
 				tempTrajectory.vertexData.push_back(tempTrajectory.color.y);
 				tempTrajectory.vertexData.push_back(tempTrajectory.color.z);
 				tempTrajectory.vertexData.push_back(1.0f);
+
+				tempTrajectory.BuildTrajectory(trajectories.size());
 			}
 		}
 		SDL_Log("Should have finished writing!\n");

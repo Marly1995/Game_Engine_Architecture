@@ -459,6 +459,10 @@ void handleInput()
 				{
 					initializeHistogramVertexBuffer(DM.histograms[i].vertexData, i);
 				}
+				for (int p = 0; p < DM.trajectories.size(); p++)
+				{
+					initializeTrajectoryVertexBuffer(DM.trajectories[p].vertexData, p);
+				}
 				break;
 			}
 		}
@@ -469,7 +473,11 @@ void handleInput()
 // tag::updateSimulation[]
 void updateSimulation(double simLength = 0.02) //update simulation with an amount of time to simulate for (in seconds)
 {
-	renderAmount += 10.0f;
+	if (renderAmount <= 65000.0f)
+	{
+		renderAmount += 10.0f;
+	}
+	
 }
 // end::updateSimulation[]
 
