@@ -10,8 +10,8 @@ public:
 
 	vector<GLfloat> vertexData;
 	vector<GLfloat> powerData;
-	GLuint vertexBuffer;
-	GLuint vertexObject;
+	vector<GLuint> vertexBuffer;
+	vector<GLuint> vertexObject;
 	glm::vec3 color;
 
 	Trajectory();

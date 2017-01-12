@@ -172,9 +172,10 @@ void DataManager::loadPositionFile(char* fileDirectory)
 				tempTrajectory.vertexData.push_back(tempTrajectory.color.z);
 				tempTrajectory.vertexData.push_back(1.0f);
 
-				tempTrajectory.BuildTrajectory(trajectories.size());
+				
 			}
 		}
+		tempTrajectory.BuildTrajectory(trajectories.size());
 		SDL_Log("Should have finished writing!\n");
 		file.close();
 	}

@@ -6,8 +6,14 @@ Trajectory::Trajectory()
 
 void Trajectory::BuildTrajectory(int index)
 {
-	vertexBuffer = index;
-	vertexObject = index;
+	int bufferCount = (vertexData.size() / 50000) + 1;
+
+	for (int i = 0; i < bufferCount; i++)
+	{
+		vertexBuffer.push_back(i);
+		vertexObject.push_back(i);
+	}
+
 	switch (index)
 	{
 	case 0:

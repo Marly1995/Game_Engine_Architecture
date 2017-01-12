@@ -311,15 +311,15 @@ void initializeHeatmapVertexArrayObject(int num, int index)
 
 }
 
-void initializeTrajectoryVertexArrayObject(int index)
+void initializeTrajectoryVertexArrayObject(int index, int num)
 {
 	// setup a GL object (a VertexArrayObject) that stores how to access data and from where
-	glGenVertexArrays(1, &DM.trajectories[index].vertexObject); //create a Vertex Array Object
-	cout << "Vertex Array Object created OK! GLUint is: " << DM.trajectories[index].vertexObject << std::endl;
+	glGenVertexArrays(1, &DM.trajectories[index].vertexObject[num]); //create a Vertex Array Object
+	cout << "Vertex Array Object created OK! GLUint is: " << DM.trajectories[index].vertexObject[num] << std::endl;
 
-	glBindVertexArray(DM.trajectories[index].vertexObject); //make the just created vertexArrayObject the active one
+	glBindVertexArray(DM.trajectories[index].vertexObject[num]); //make the just created vertexArrayObject the active one
 
-	glBindBuffer(GL_ARRAY_BUFFER, DM.trajectories[index].vertexBuffer); //bind vertexDataBufferObject
+	glBindBuffer(GL_ARRAY_BUFFER, DM.trajectories[index].vertexBuffer[num]); //bind vertexDataBufferObject
 
 	glEnableVertexAttribArray(positionLocation); //enable attribute at index positionLocation
 	glEnableVertexAttribArray(vertexColorLocation); //enable attribute at index vertexColorLocation
@@ -363,16 +363,16 @@ void initializeHistogramVertexBuffer(vector<GLfloat> data, int index)
 	initializeHistogramVertexArrayObject(index);
 }
 
-void initializeTrajectoryVertexBuffer(vector<GLfloat> data,  int index)
+void initializeTrajectoryVertexBuffer(vector<GLfloat> data,  int index, int num)
 {
-	glGenBuffers(1, &DM.trajectories[index].vertexBuffer);
+	glGenBuffers(1, &DM.trajectories[index].vertexBuffer[num]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, DM.trajectories[index].vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat), &data.front(), GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, DM.trajectories[index].vertexBuffer[num]);
+	glBufferData(GL_ARRAY_BUFFER, 50000.0f * sizeof(GLfloat), &data.at(num * 50000), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	cout << "vertexDataBufferObject created OK! GLUint is: " << DM.trajectories[index].vertexBuffer << std::endl;
+	cout << "vertexDataBufferObject created OK! GLUint is: " << DM.trajectories[index].vertexBuffer[num] << std::endl;
 
-	initializeTrajectoryVertexArrayObject(index);
+	initializeTrajectoryVertexArrayObject(index, num);
 }
 // end::initializeVertexBuffer[]
 
@@ -441,7 +441,10 @@ void handleInput()
 			case 1: 
 				for (int p = 0; p < DM.trajectories.size(); p++)
 				{
-					initializeTrajectoryVertexBuffer(DM.trajectories[p].vertexData, p);
+					for (int j = 0; j < DM.trajectories[p].vertexBuffer.size(); j++)
+					{
+						initializeTrajectoryVertexBuffer(DM.trajectories[p].vertexData, p, j);
+					}
 				}
 				for (int i = 0; i < DM.heatmaps.size(); i++)
 				{
@@ -461,7 +464,10 @@ void handleInput()
 				}
 				for (int p = 0; p < DM.trajectories.size(); p++)
 				{
-					initializeTrajectoryVertexBuffer(DM.trajectories[p].vertexData, p);
+					for (int j = 0; j < DM.trajectories[p].vertexBuffer.size(); j++)
+					{
+						initializeTrajectoryVertexBuffer(DM.trajectories[p].vertexData, p, j);
+					}
 				}
 				break;
 			}
@@ -511,40 +517,46 @@ void render()
 			{
 				for (int x = 0; x < DM.trajectories.size(); x++)
 				{
-					glBindVertexArray(DM.trajectories[x].vertexObject);
+					for (int y = 0; y < DM.trajectories[x].vertexBuffer.size(); y++)
+					{
+						glBindVertexArray(DM.trajectories[x].vertexObject[y]);
 
-					//set projectionMatrix - how we go from 3D to 2D
-					glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+						//set projectionMatrix - how we go from 3D to 2D
+						glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
 
-					//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-					glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+						//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+						glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
 
-					glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-					glLineWidth(5);
-					glDrawArrays(GL_LINE_STRIP, 0, DM.trajectories[x].vertexData.size() / 7);
+						glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+						glLineWidth(5);
+						glDrawArrays(GL_LINE_STRIP, 0, DM.trajectories[x].vertexData.size() / (7 * DM.trajectories[x].vertexBuffer.size()));
+					}
 				}
 			}
 			else
 			{
 				for (int x = 0; x < DM.trajectories.size(); x++)
 				{
-					glBindVertexArray(DM.trajectories[x].vertexObject);
-
-					//set projectionMatrix - how we go from 3D to 2D
-					glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
-
-					//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-					glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
-
-					glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
-					glLineWidth(5);
-					if (renderAmount <= (DM.trajectories[x].vertexData.size() / 7))
+					for (int y = 0; y < DM.trajectories[x].vertexBuffer.size(); y++)
 					{
-						glDrawArrays(GL_LINE_STRIP, 0, (renderAmount));
-					}	
-					else
-					{
-						glDrawArrays(GL_LINE_STRIP, 0, (DM.trajectories[x].vertexData.size() / 7));
+						glBindVertexArray(DM.trajectories[x].vertexObject[y]);
+
+						//set projectionMatrix - how we go from 3D to 2D
+						glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
+
+						//set viewMatrix - how we control the view (viewpoint, view direction, etc)
+						glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+
+						glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
+						glLineWidth(5);
+						if (renderAmount <= (DM.trajectories[x].vertexData.size() / 7))
+						{
+							glDrawArrays(GL_LINE_STRIP, 0, (renderAmount));
+						}
+						else
+						{
+							glDrawArrays(GL_LINE_STRIP, 0, (DM.trajectories[x].vertexData.size() / (7 * DM.trajectories[x].vertexBuffer.size())));
+						}
 					}
 				}
 			}
