@@ -46,14 +46,16 @@ std::string loadShader(const string filePath) {
 
 //our variables
 GLfloat cameraSpeed = 0.05f;
-glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, -2.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 2.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 bool cameraForward = false;
 bool cameraBackward = false;
 bool cameraLeft = false;
 bool cameraRight = false;
+bool cameraRotUp = false;
+bool cameraRotDown = false;
 
 bool done = false;
 
@@ -443,7 +445,13 @@ void handleInput()
 					break;
 				case SDLK_RIGHT: cameraRight = true;
 					break;
-				case SDLK_SPACE: cameraPosition = glm::vec3(0.0f, 0.0f, -2.0f);
+				case SDLK_a: cameraRotUp = true;
+					break;
+				case SDLK_d: cameraRotDown = true;
+					break;
+				case SDLK_SPACE: cameraPosition = glm::vec3(0.0f, 0.0f, 2.0f);
+					cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
+					cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 					break;
 				}
 			break;
@@ -459,6 +467,10 @@ void handleInput()
 				case SDLK_LEFT: cameraLeft = false;
 					break;
 				case SDLK_RIGHT: cameraRight = false;
+					break;
+				case SDLK_a: cameraRotUp = false;
+					break;
+				case SDLK_d: cameraRotDown = false;
 					break;
 				}
 			break;
@@ -515,16 +527,22 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	}
 
 	if (cameraForward == true) {
-		cameraPosition -= cameraSpeed * cameraFront;
+		cameraPosition -= cameraSpeed * glm::vec3(0.0f, 0.0f, -1.0f);
 	}
 	if (cameraBackward == true) {
-		cameraPosition += cameraSpeed * cameraFront;
+		cameraPosition += cameraSpeed * glm::vec3(0.0f, 0.0f, -1.0f);
 	}
 	if (cameraLeft == true) {
 		cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	}
 	if (cameraRight == true) {
 		cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+	if (cameraRotUp == true) {
+		cameraPosition += glm::normalize(glm::cross(cameraFront, glm::vec3(1.0f, 0.0f, 0.0f))) * cameraSpeed;
+	}
+	if (cameraRotDown == true) {
+		cameraPosition -= glm::normalize(glm::cross(cameraFront, glm::vec3(1.0f, 0.0f, 0.0f))) * cameraSpeed;
 	}
 	
 }
