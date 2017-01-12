@@ -432,6 +432,9 @@ void handleInput()
 					renderAmount = 0.0f;
 					break;
 				case SDLK_1: renderMode = 1;
+					cameraPosition = glm::vec3(0.0f, 0.0f, -2.0f);
+					cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+					cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 					break;
 				case SDLK_2: renderMode = 2;
 					cameraPosition = glm::vec3(0.0f, 0.0f, -2.0f);
@@ -439,6 +442,9 @@ void handleInput()
 					cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 					break;
 				case SDLK_3: renderMode = 3;
+					cameraPosition = glm::vec3(0.0f, 0.0f, 2.0f);
+					cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+					cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 					break;
 				case SDLK_UP: cameraForward = true;
 					break;
@@ -452,8 +458,8 @@ void handleInput()
 					break;
 				case SDLK_d: cameraRotDown = true;
 					break;
-				case SDLK_SPACE: cameraPosition = glm::vec3(0.0f, 0.0f, -2.0f);
-					cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
+				case SDLK_SPACE: cameraPosition = glm::vec3(0.0f, 0.0f, 2.0f);
+					cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 					cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 					break;
 				}
