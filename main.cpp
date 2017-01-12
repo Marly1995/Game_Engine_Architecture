@@ -434,6 +434,9 @@ void handleInput()
 				case SDLK_1: renderMode = 1;
 					break;
 				case SDLK_2: renderMode = 2;
+					cameraPosition = glm::vec3(0.0f, 0.0f, -2.0f);
+					cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+					cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 					break;
 				case SDLK_3: renderMode = 3;
 					break;
@@ -449,7 +452,7 @@ void handleInput()
 					break;
 				case SDLK_d: cameraRotDown = true;
 					break;
-				case SDLK_SPACE: cameraPosition = glm::vec3(0.0f, 0.0f, 2.0f);
+				case SDLK_SPACE: cameraPosition = glm::vec3(0.0f, 0.0f, -2.0f);
 					cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
 					cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 					break;
@@ -627,8 +630,6 @@ void render()
 				glBindVertexArray(DM.histograms[x].vertexObject);
 
 				//set projectionMatrix - how we go from 3D to 2D
-				glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
-
 				//set viewMatrix - how we control the view (viewpoint, view direction, etc)
 				glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(view));
 
@@ -648,7 +649,6 @@ void render()
 					for (int i = 0; i < 10; i++)
 					{
 						glBindVertexArray(DM.heatmaps[x].vertexObject[i]);
-
 						//set projectionMatrix - how we go from 3D to 2D
 						//set viewMatrix - how we control the view (viewpoint, view direction, etc)
 						glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(view));
