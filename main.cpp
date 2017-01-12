@@ -45,6 +45,16 @@ std::string loadShader(const string filePath) {
 // end::loadShader[]
 
 //our variables
+GLfloat cameraSpeed = 0.05f;
+glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, -2.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+bool cameraForward = false;
+bool cameraBackward = false;
+bool cameraLeft = false;
+bool cameraRight = false;
+
 bool done = false;
 
 bool renderOverTime = false;
@@ -424,6 +434,32 @@ void handleInput()
 				case SDLK_2: renderMode = 2;
 					break;
 				case SDLK_3: renderMode = 3;
+					break;
+				case SDLK_UP: cameraForward = true;
+					break;
+				case SDLK_DOWN: cameraBackward = true;
+					break;
+				case SDLK_LEFT: cameraLeft = true;
+					break;
+				case SDLK_RIGHT: cameraRight = true;
+					break;
+				case SDLK_SPACE: cameraPosition = glm::vec3(0.0f, 0.0f, -2.0f);
+					break;
+				}
+			break;
+		case SDL_KEYUP:
+			event.key.repeat = true;
+			if (event.key.repeat)
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_UP: cameraForward = false;
+					break;
+				case SDLK_DOWN: cameraBackward = false;
+					break;
+				case SDLK_LEFT: cameraLeft = false;
+					break;
+				case SDLK_RIGHT: cameraRight = false;
+					break;
 				}
 			break;
 			// TODO: make functions for some of these
@@ -477,6 +513,19 @@ void updateSimulation(double simLength = 0.02) //update simulation with an amoun
 	{
 		renderAmount += 10.0f;
 	}
+
+	if (cameraForward == true) {
+		cameraPosition -= cameraSpeed * cameraFront;
+	}
+	if (cameraBackward == true) {
+		cameraPosition += cameraSpeed * cameraFront;
+	}
+	if (cameraLeft == true) {
+		cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+	if (cameraRight == true) {
+		cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
 	
 }
 // end::updateSimulation[]
@@ -498,6 +547,11 @@ void render()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), position1);
 
+	glm::mat4 view = glm::lookAt(cameraPosition, cameraFront, cameraUp);
+
+	glm::mat4 projection;
+	projection = glm::perspective(45.0f, 1.0f, 0.1f, 100.0f);
+	glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(projection));
 	// TODO: make this more objectified and add option for render fro texture for heatmaps
 	switch (renderMode)
 	{
@@ -514,10 +568,8 @@ void render()
 					glBindVertexArray(DM.trajectories[x].vertexObject);
 
 					//set projectionMatrix - how we go from 3D to 2D
-					glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
-
 					//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-					glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+					glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(view));
 
 					glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
 					glLineWidth(5);
@@ -531,10 +583,8 @@ void render()
 					glBindVertexArray(DM.trajectories[x].vertexObject);
 
 					//set projectionMatrix - how we go from 3D to 2D
-					glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
-
 					//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-					glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+					glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(view));
 
 					glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
 					glLineWidth(5);
@@ -562,7 +612,7 @@ void render()
 				glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
 
 				//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-				glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+				glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(view));
 
 				glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
 				glDrawArrays(GL_TRIANGLES, 0, DM.histograms[x].vertexData.size() / 7);
@@ -582,10 +632,8 @@ void render()
 						glBindVertexArray(DM.heatmaps[x].vertexObject[i]);
 
 						//set projectionMatrix - how we go from 3D to 2D
-						glUniformMatrix4fv(projectionMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0)));
-
 						//set viewMatrix - how we control the view (viewpoint, view direction, etc)
-						glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(glm::mat4(1.0f)));
+						glUniformMatrix4fv(viewMatrixLocation, 1, false, glm::value_ptr(view));
 
 						glUniformMatrix4fv(modelMatrixLocation, 1, false, glm::value_ptr(modelMatrix));
 						glDrawArrays(GL_TRIANGLES, 0, DM.heatmaps[x].vertexData.size() / 70);

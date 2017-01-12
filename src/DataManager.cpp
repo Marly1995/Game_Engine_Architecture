@@ -166,7 +166,7 @@ void DataManager::loadPositionFile(char* fileDirectory)
 
 				tempTrajectory.vertexData.push_back(x / 3000.0f);
 				tempTrajectory.vertexData.push_back(y / 3000.0f);
-				tempTrajectory.vertexData.push_back(z / 3000.0f);
+				tempTrajectory.vertexData.push_back(z / 100.0f);
 				tempTrajectory.vertexData.push_back(tempTrajectory.color.x);
 				tempTrajectory.vertexData.push_back(tempTrajectory.color.y);
 				tempTrajectory.vertexData.push_back(tempTrajectory.color.z);
