@@ -14,7 +14,7 @@ It is possible to drag multiple files into the program at once but it may occasi
 
 ## Video
 
-[![Image of video thumbnail](https://img.youtube.com/vi/watch?v=2F7fqe7PqpQ/0.jpg)](https://www.youtube.com/watch?v=2F7fqe7PqpQ)
+[![Image of video thumbnail](https://img.youtube.com/vi/2F7fqe7PqpQ/0.jpg)](https://www.youtube.com/watch?v=2F7fqe7PqpQ)
 
 ## Controls
 
